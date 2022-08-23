@@ -1,42 +1,43 @@
 ---
 
 ---
-<div class="relative h-full border-y-2 w-14 border-stone-700 dark:border-stone-200">
+<div class="relative h-full border-y-2 w-14 border-stone-700 dark:border-stone-200 overflow-hidden">
   <svg
     id="drop"
     class="absolute left-6"
-    width="10"
+    width="10" 
     height="20"
     viewBox="0 0 10 20"
     fill="none"
   >
     <ellipse class=" fill-blue-300 dark:fill-blue-200" id="water" cx="5" cy="5" rx="5" ry="5"/>
-    <!-- <circle cx="5" cy="5" r="5" fill="white" /> -->
   </svg>
 </div>
-<script>
-  const g = 4;
-  let v = 0
-  let y = 0
-
+<script is:inline>
   const store = window.localStorage;
+  let v = 0
+  let y = -10
 
   function animate() {
     const drop = document.getElementById('drop');
     const water = document.getElementById('water');
-    v += g;
+    if (y < 0) {
+      v += .01; 
+    } else {
+      v += 2.5;
+    }
     y += v;
 
-    if (water && y > 300) {
+    if (water && y > 250) {
       water.setAttribute('cx', "3")
       water.setAttribute('cy', "10")
       water.setAttribute('rx', "3")
       water.setAttribute('ry', "10")
     }
 
-    if (y > 50000) {
+    if (y > 30000) {
       v = 0;
-      y = 0;
+      y = -10;
       if (water) {
         water.setAttribute('cx', "5")
         water.setAttribute('cy', "5")
