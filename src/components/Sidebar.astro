@@ -1,5 +1,6 @@
 ---
-import Logo from "./logo.astro";
+import Logo from "./Logo.astro";
+import WaterDrop from "./WaterDrop.astro";
 
 enum Page {
   home = "/",
@@ -17,26 +18,19 @@ const isActiveClass = "text-[#366CC6] dark:text-[#C63D32]";
   <a href={Page.home} class="w-14 mt-1 md:mt-7">
     <Logo />
   </a>
-  <div
-    class="flex flex-col mt-20 justify-between text-right h-fit font-medium text-xs md:text-base"
-  >
-    <a
-      href={Page.home}
-      class={`py-2 ${page === Page.home ? isActiveClass : ""}`}
-    >
+  <div class="flex flex-col mt-20 justify-between text-right h-fit font-medium text-xs md:text-base">
+    <a href={Page.home} class={`py-2 ${page === Page.home ? isActiveClass : ""}`}>
       Home
     </a>
-    <a
-      href={Page.about}
-      class={`py-2 ${page === Page.about ? isActiveClass : ""}`}
-    >
+    <a href={Page.about} class={`py-2 ${page === Page.about ? isActiveClass : ""}`}>
       About
     </a>
-    <a
-      href={Page.projects}
-      class={`py-2 ${page === Page.projects ? isActiveClass : ""}`}
-    >
+    <a href={Page.projects} class={`py-2 ${page === Page.projects ? isActiveClass : ""}`}>
       Projects
     </a>
+  </div>
+  <WaterDrop />
+  <div>
+    links
   </div>
 </nav>
