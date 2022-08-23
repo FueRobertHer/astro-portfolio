@@ -8,8 +8,6 @@ enum Page {
   about = "/about",
   projects = "/projects",
 }
-
-const page = Astro.url.pathname;
 ---
 
 <nav
@@ -19,13 +17,13 @@ const page = Astro.url.pathname;
     <Logo />
   </a>
   <div class="flex flex-col mt-20 justify-between text-right h-fit font-medium text-xs md:text-base">
-    <a href={Page.home} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${page === Page.home ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
+    <a href={Page.home} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === Page.home ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
       Home
     </a>
-    <a href={Page.about} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${page === Page.about ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
+    <a href={Page.about} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === Page.about ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
       About
     </a>
-    <a href={Page.projects} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${page === Page.projects ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
+    <a href={Page.projects} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === Page.projects ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
       Projects
     </a>
   </div>
