@@ -1,0 +1,42 @@
+---
+import Logo from "./logo.astro";
+
+enum Page {
+  home = "/",
+  about = "/about",
+  projects = "/projects",
+}
+
+const page = Astro.url.pathname;
+const isActiveClass = "text-[#366CC6] dark:text-[#C63D32]";
+---
+
+<nav
+  class="fixed top-0 left-0 flex flex-col items-end bg-transparent h-screen w-14 md:w-20"
+>
+  <a href={Page.home} class="w-14 mt-1 md:mt-7">
+    <Logo />
+  </a>
+  <div
+    class="flex flex-col mt-20 justify-between text-right h-fit font-medium text-xs md:text-base"
+  >
+    <a
+      href={Page.home}
+      class={`py-2 ${page === Page.home ? isActiveClass : ""}`}
+    >
+      Home
+    </a>
+    <a
+      href={Page.about}
+      class={`py-2 ${page === Page.about ? isActiveClass : ""}`}
+    >
+      About
+    </a>
+    <a
+      href={Page.projects}
+      class={`py-2 ${page === Page.projects ? isActiveClass : ""}`}
+    >
+      Projects
+    </a>
+  </div>
+</nav>
