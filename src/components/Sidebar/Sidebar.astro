@@ -3,27 +3,22 @@ import Logo from "../Logo.astro";
 import WaterDrop from "./WaterDrop.astro";
 import OutsideLinks from "./OutsideLinks.astro";
 
-enum Page {
-  home = "/",
-  about = "/about",
-  projects = "/projects",
-}
 ---
 
 <nav
   class="fixed top-0 left-0 flex flex-col items-end bg-transparent h-screen w-14 md:w-20"
 >
-  <a href={Page.home} class="w-14 mt-1 md:mt-7">
+  <a href="/" class="w-14 mt-1 md:mt-7">
     <Logo />
   </a>
   <div class="flex flex-col mt-20 justify-between text-right h-fit font-medium text-xs md:text-base">
-    <a href={Page.home} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === Page.home ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
+    <a href="/" class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === "/" ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
       Home
     </a>
-    <a href={Page.about} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === Page.about ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
+    <a href="/about" class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === "/about" ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
       About
     </a>
-    <a href={Page.projects} class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === Page.projects ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
+    <a href="/projects" class={`py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32] ${Astro.url.pathname === "/projects" ? "text-[#366CC6] dark:text-[#C63D32]" : ""}`}>
       Projects
     </a>
   </div>
