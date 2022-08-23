@@ -11,7 +11,7 @@ const themes = ["light", "dark"];
 
 const icons = [
   <svg
-    className=" fill-[#C63D32] dark:fill-current"
+    className="fill-[#C63D32] dark:fill-current"
     xmlns="http://www.w3.org/2000/svg"
     width="20"
     height="20"
@@ -24,7 +24,7 @@ const icons = [
     />
   </svg>,
   <svg
-    className=" fill-current dark:fill-[#C63D32]"
+    className="fill-current dark:fill-[#366CC6]"
     xmlns="http://www.w3.org/2000/svg"
     width="20"
     height="20"
