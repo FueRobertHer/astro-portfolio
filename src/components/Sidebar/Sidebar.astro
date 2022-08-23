@@ -1,6 +1,7 @@
 ---
-import Logo from "./Logo.astro";
+import Logo from "../Logo.astro";
 import WaterDrop from "./WaterDrop.astro";
+import OutsideLinks from "./OutsideLinks.astro";
 
 enum Page {
   home = "/",
@@ -30,7 +31,5 @@ const isActiveClass = "text-[#366CC6] dark:text-[#C63D32]";
     </a>
   </div>
   <WaterDrop />
-  <div>
-    links
-  </div>
+  <OutsideLinks />
 </nav>
