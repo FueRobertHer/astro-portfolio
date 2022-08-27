@@ -1,0 +1,22 @@
+---
+export interface Props {
+  title: string;
+  content: string;
+  isSwapped?: boolean;
+}
+
+const { title, content, isSwapped } = Astro.props;
+---
+
+<div class={`flex my-10 bg-slate-500 rounded-xl ${isSwapped ? 'flex-row-reverse' : ''}`}>
+  <div class="p-10">
+    <h2>
+      {title}
+    </h2>
+    <p>{content}</p>
+  </div>
+  <div>
+    image
+  </div>
+
+</div>
