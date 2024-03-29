@@ -1,17 +1,15 @@
 ---
 import Logo from "../Logo.astro";
-import WaterDrop from "./WaterDrop.astro";
+// import WaterDrop from "./WaterDrop.astro";
 import OutsideLinks from "./OutsideLinks.astro";
+import NavLink from "../NavLink.astro"
+import ThemeToggleButton from "./ThemeToggleButton";
 
 enum Page {
   home = "/",
   about = "/about",
   projects = "/projects",
 }
-
-const page = Astro.url.pathname;
-const links = "py-2 hover:text-[#366CC6] dark:hover:text-[#C63D32]"
-const isActiveClass = "text-[#366CC6] dark:text-[#C63D32]";
 ---
 
 <nav
@@ -20,17 +18,15 @@ const isActiveClass = "text-[#366CC6] dark:text-[#C63D32]";
   <a href={Page.home} class="w-14 mt-1 md:mt-7">
     <Logo />
   </a>
+  <ThemeToggleButton client:visible />
   <div class="flex flex-col mt-20 justify-between text-right h-fit font-medium text-base md:text-xl">
-    <a href={Page.home} class={`${links} ${page === Page.home ? isActiveClass : ""}`}>
-      Home
-    </a>
-    <a href={Page.about} class={`${links} ${page === Page.about ? isActiveClass : ""}`}>
+    <NavLink href={Page.about}>
       About
-    </a>
-    <a href={Page.projects} class={`${links} ${page === Page.projects ? isActiveClass : ""}`}>
+    </NavLink>
+    <NavLink href={Page.projects}>
       Projects
-    </a>
+    </NavLink>
   </div>
-  <WaterDrop />
+  <!-- <WaterDrop /> -->
   <OutsideLinks />
 </nav>

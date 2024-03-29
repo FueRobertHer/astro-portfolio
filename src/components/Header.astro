@@ -1,0 +1,42 @@
+---
+import Logo from "./Logo.astro"
+import NavLink from "./NavLink.astro"
+import ThemeToggleButton from "./Sidebar/ThemeToggleButton";
+
+interface Link {
+  text: string;
+  href: string;
+}
+
+const links: Link[] = [
+  {
+    text: "Home",
+    href:"/"
+  },
+  {
+    text: "About",
+    href:"/about"
+  },
+  {
+    text: "Projects",
+    href:"/projects"
+  }
+]
+---
+<header class="flex w-full justify-between py-4 px-8">
+  <a class=" size-8" href="/">
+    <Logo />
+  </a>
+  <div class="flex items-center">
+    {links.map(link => (
+      <span class="mx-4">
+        <NavLink href={link.href}>
+          {link.text}
+        </NavLink>
+      </span>
+    ))}
+    <span class="mx-4">
+      <ThemeToggleButton client:visible />
+    </span>
+  </div>
+</header>

@@ -1,36 +1,15 @@
 ---
 import ProjectCard from '../components/Sidebar/ProjectCard.astro';
-import Layout from '../layouts/Layout.astro';
+import ContentLayout from '../layouts/ContentLayout.astro';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<Layout title="Fue Her">
-	<main>
-    <h1>Projects</h1>
-    <p>Check out some things I make</p>
-    <hr/>
+<BaseLayout title="Fue Her">
+  <ContentLayout header="Projects">
     <section class="mt-20">
-      <ProjectCard 
-        title="TabbyNotes"
-        content="A small note taking chrome extension/firefox addon"
-      />
-      <ProjectCard 
-        title="TabbyNotes"
-        content="A small note taking chrome extension/firefox addon"
-        isSwapped
-      />
-      <ProjectCard 
-        title="TabbyNotes"
-        content="A small note taking chrome extension/firefox addon"
-      />
-      <ProjectCard 
-        title="TabbyNotes"
-        content="A small note taking chrome extension/firefox addon"
-        isSwapped
-      />
-      <ProjectCard 
-        title="TabbyNotes"
-        content="A small note taking chrome extension/firefox addon"
-      />
+      I had stuff here but decided to clean it up
     </section>
-	</main>
-</Layout>
+  </ContentLayout>
+
+</BaseLayout>

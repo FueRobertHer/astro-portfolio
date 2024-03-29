@@ -1,0 +1,14 @@
+---
+export interface Props {
+ href: string;
+}
+
+const { href } = Astro.props;
+
+const path = Astro.url.pathname;
+const isActive = path === href
+---
+
+<a href={href} class={`py-2 font-bold uppercase hover:text-[#366CC6] dark:hover:text-[#C63D32] ${isActive && "text-[#366CC6] dark:text-[#C63D32]"}`}>
+  <slot />
+</a>

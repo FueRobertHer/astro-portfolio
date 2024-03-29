@@ -1,0 +1,11 @@
+---
+export interface Props {
+  header: string;
+}
+
+const {header} = Astro.props;
+---
+<main class="w-full mt-10 md:mt-20">
+  <h1 class="text-lg font-bold">{header}</h1>
+  <slot />
+</main>
