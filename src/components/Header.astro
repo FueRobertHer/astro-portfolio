@@ -1,7 +1,8 @@
 ---
-import Logo from "./Logo.astro"
-import NavLink from "./NavLink.astro"
-import ThemeToggleButton from "./Sidebar/ThemeToggleButton";
+import Logo from "./Logo.astro";
+import NavLink from "./NavLink.astro";
+import Menu from "./Menu";
+import ThemeToggleButton from "./ThemeToggleButton";
 
 interface Link {
   text: string;
@@ -23,11 +24,11 @@ const links: Link[] = [
   }
 ]
 ---
-<header class="flex w-full justify-between py-4 px-8">
-  <a class=" size-8" href="/">
+<header class="flex w-full justify-between py-4 sm:px-8">
+  <a class="size-8 mx-4" href="/">
     <Logo />
   </a>
-  <div class="flex items-center">
+  <div class=" hidden sm:flex items-center justify-between w-full sm:w-fit sm:justify-normal">
     {links.map(link => (
       <span class="mx-4">
         <NavLink href={link.href}>
@@ -38,5 +39,21 @@ const links: Link[] = [
     <span class="mx-4">
       <ThemeToggleButton client:visible />
     </span>
+  </div>
+  <div class=" sm:hidden">
+    <Menu client:visible>
+      <menu class="flex flex-col items-center text-lg gap-4">
+        <div>
+          <ThemeToggleButton client:visible />
+        </div>
+        {links.map(link => (
+          <div>
+            <NavLink href={link.href}>
+              {link.text}
+            </NavLink>
+          </div>
+        ))}
+      </menu>
+    </Menu>
   </div>
 </header>

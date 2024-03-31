@@ -29,11 +29,6 @@ const { title } = Astro.props;
     <meta name="theme-color" content="#ffffff">
     <meta name="generator" content={Astro.generator} />
 
-    <!-- font family -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&display=swap" rel="stylesheet"> 
-
     <slot name="meta"/>
 
     <!-- inline to prevent FOUC -->
@@ -48,15 +43,15 @@ const { title } = Astro.props;
     </script>
 
   </head>
-  <body class="flex flex-col items-center justify-center min-h-screen min-w-full bg-stone-200 dark:bg-stone-900 text-stone-700 dark:text-stone-200">
-    <div class="flex flex-col items-center max-w-screen-2xl w-full grow bg-stone-200 dark:bg-stone-950 m-12 rounded shadow-[0_0_0.5em_0.5em_rgba(135,135,135,0.15)] dark:shadow-[0_0_0.5em_0.5em_rgba(40,40,40,0.35)]">
+  <body class="flex flex-col items-center justify-center min-h-screen min-w-full p-4 sm:p-12 bg-stone-200 dark:bg-stone-900 text-stone-700 dark:text-stone-200">
+    <div class="flex flex-col items-center max-w-full sm:max-w-screen-2xl w-full grow bg-stone-200 dark:bg-stone-950 rounded shadow-[0_0_0.5em_0.5em_rgba(135,135,135,0.15)] dark:shadow-[0_0_0.5em_0.5em_rgba(40,40,40,0.35)]">
       <Header />
 
       <!-- <div class="w-2/12">
        <Sidebar />
       </div> -->
       
-      <div class="w-10/12 mx-20 max-w-6xl">
+      <div class="mx-4 w-full sm:w-10/12 sm:mx-20 sm:max-w-6xl">
         <slot />
       </div>
     </div>
