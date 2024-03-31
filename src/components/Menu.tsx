@@ -12,7 +12,7 @@ const Menu = (props: PropsWithChildren) => {
         }}
         title="Open navigation menu"
         aria-label="Open navigation menu"
-        className="size-8 mx-4 rounded-md text-3xl "
+        className="size-8 mx-6 text-3xl "
       >
         ☰
       </button>
