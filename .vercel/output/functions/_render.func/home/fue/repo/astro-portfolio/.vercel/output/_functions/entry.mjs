@@ -1,8 +1,8 @@
 import { renderers } from './renderers.mjs';
-import { l as levels, g as getEventPrefix, L as Logger, A as AstroIntegrationLogger, manifest } from './manifest_DFg89-rj.mjs';
-import { A as AstroError, R as ResponseSentError, l as MiddlewareNoDataOrNextCalled, n as MiddlewareNotAResponse, o as ROUTE_TYPE_HEADER, p as REROUTE_DIRECTIVE_HEADER, G as GetStaticPathsRequired, q as InvalidGetStaticPathsReturn, t as InvalidGetStaticPathsEntry, u as GetStaticPathsExpectedParams, v as GetStaticPathsInvalidRouteParam, P as PageNumberParamNotFound, D as DEFAULT_404_COMPONENT, N as NoMatchingStaticPathFound, w as PrerenderDynamicEndpointPathCollide, x as ReservedSlotName, y as renderSlotToString, z as renderJSX, B as chunkToString, C as LocalsNotAnObject, H as clientLocalsSymbol, J as clientAddressSymbol$1, K as ClientAddressNotAvailable, S as StaticClientAddressNotAvailable, O as ASTRO_VERSION, Q as responseSentSymbol$1, T as AstroResponseHeadersReassigned, V as renderEndpoint, W as renderPage, X as REROUTABLE_STATUS_CODES } from './chunks/astro_DRYuNIHL.mjs';
+import { l as levels, g as getEventPrefix, L as Logger, A as AstroIntegrationLogger, manifest } from './manifest_DoJ2iJ2w.mjs';
+import { A as AstroError, R as ResponseSentError, l as MiddlewareNoDataOrNextCalled, n as MiddlewareNotAResponse, o as ROUTE_TYPE_HEADER, p as REROUTE_DIRECTIVE_HEADER, G as GetStaticPathsRequired, q as InvalidGetStaticPathsReturn, t as InvalidGetStaticPathsEntry, u as GetStaticPathsExpectedParams, v as GetStaticPathsInvalidRouteParam, P as PageNumberParamNotFound, D as DEFAULT_404_COMPONENT, N as NoMatchingStaticPathFound, w as PrerenderDynamicEndpointPathCollide, x as ReservedSlotName, y as renderSlotToString, z as renderJSX, B as chunkToString, C as LocalsNotAnObject, H as clientLocalsSymbol, J as clientAddressSymbol$1, K as ClientAddressNotAvailable, S as StaticClientAddressNotAvailable, O as ASTRO_VERSION, Q as responseSentSymbol$1, T as AstroResponseHeadersReassigned, V as renderPage, W as renderEndpoint, X as REROUTABLE_STATUS_CODES } from './chunks/astro_DmV6Xgd_.mjs';
 import { serialize, parse } from 'cookie';
-import { e as appendForwardSlash, j as joinPaths, t as trimSlashes, f as fileExtension, s as slash, p as prependForwardSlash, r as removeTrailingForwardSlash, g as collapseDuplicateSlashes } from './chunks/astro/assets-service_CNJGMCdv.mjs';
+import { e as appendForwardSlash, j as joinPaths, t as trimSlashes, f as fileExtension, s as slash, p as prependForwardSlash, g as removeTrailingForwardSlash, h as collapseDuplicateSlashes } from './chunks/astro/assets-service_R2Dy173U.mjs';
 import 'html-escaper';
 import 'clsx';
 import 'kleur/colors';
@@ -1117,24 +1117,38 @@ class RenderContext {
       serverLike
     });
     const apiContext = this.createAPIContext(props);
-    const { type } = routeData;
-    const lastNext = type === "endpoint" ? () => renderEndpoint(componentInstance, apiContext, serverLike, logger) : type === "redirect" ? () => renderRedirect(this) : type === "page" ? async () => {
-      const result = await this.createResult(componentInstance);
-      const response2 = await renderPage(
-        result,
-        componentInstance?.default,
-        props,
-        {},
-        streaming,
-        routeData
-      );
-      response2.headers.set(ROUTE_TYPE_HEADER, "page");
-      if (routeData.route === "/404" || routeData.route === "/500") {
-        response2.headers.set(REROUTE_DIRECTIVE_HEADER, "no");
+    const lastNext = async () => {
+      switch (routeData.type) {
+        case "endpoint":
+          return renderEndpoint(componentInstance, apiContext, serverLike, logger);
+        case "redirect":
+          return renderRedirect(this);
+        case "page": {
+          const result = await this.createResult(componentInstance);
+          let response2;
+          try {
+            response2 = await renderPage(
+              result,
+              componentInstance?.default,
+              props,
+              {},
+              streaming,
+              routeData
+            );
+          } catch (e) {
+            result.cancelled = true;
+            throw e;
+          }
+          response2.headers.set(ROUTE_TYPE_HEADER, "page");
+          if (routeData.route === "/404" || routeData.route === "/500") {
+            response2.headers.set(REROUTE_DIRECTIVE_HEADER, "no");
+          }
+          return response2;
+        }
+        case "fallback": {
+          return new Response(null, { status: 500, headers: { [ROUTE_TYPE_HEADER]: "fallback" } });
+        }
       }
-      return response2;
-    } : type === "fallback" ? () => new Response(null, { status: 500, headers: { [ROUTE_TYPE_HEADER]: "fallback" } }) : () => {
-      throw new Error("Unknown type of route: " + type);
     };
     const response = await callMiddleware(middleware, apiContext, lastNext);
     if (response.headers.get(ROUTE_TYPE_HEADER)) {
@@ -1202,6 +1216,7 @@ class RenderContext {
       }
     };
     const result = {
+      cancelled: false,
       clientDirectives,
       inlinedScripts,
       componentMetadata,
@@ -1394,7 +1409,7 @@ function ensure404Route(manifest) {
       params: [],
       pattern: /\/404/,
       prerender: false,
-      segments: [],
+      segments: [[{ content: "404", dynamic: false, spread: false }]],
       type: "page",
       route: "/404",
       fallbackRoutes: [],
@@ -2000,10 +2015,10 @@ const createExports = (manifest, { middlewareSecret }) => {
   return { default: handler };
 };
 
-const _page0 = () => import('./chunks/generic_DdJHugg0.mjs');
-const _page1 = () => import('./chunks/about_BpL_b-bE.mjs');
-const _page2 = () => import('./chunks/projects_D8oujoMc.mjs');
-const _page3 = () => import('./chunks/index_BKdDSerP.mjs');
+const _page0 = () => import('./chunks/generic_CZItA6X6.mjs');
+const _page1 = () => import('./chunks/about_BpSe3knC.mjs');
+const _page2 = () => import('./chunks/projects_CnrimLz1.mjs');
+const _page3 = () => import('./chunks/index_D64v7uCE.mjs');
 const pageMap = new Map([
     ["node_modules/astro/dist/assets/endpoint/generic.js", _page0],
     ["src/pages/about.astro", _page1],
@@ -2017,7 +2032,7 @@ const _manifest = Object.assign(manifest, {
     middleware: onRequest
 });
 const _args = {
-    "middlewareSecret": "da544623-58bb-4910-b287-700beb46f00d"
+    "middlewareSecret": "c5f10c6c-fd35-478c-9468-10d617bb15bb"
 };
 const _exports = createExports(_manifest, _args);
 const __astrojsSsrVirtualEntry = _exports.default;

@@ -186,6 +186,11 @@ const MiddlewareNotAResponse = {
   title: "The middleware returned something that is not a `Response` object.",
   message: "Any data returned from middleware must be a valid `Response` object."
 };
+const EndpointDidNotReturnAResponse = {
+  name: "EndpointDidNotReturnAResponse",
+  title: "The endpoint did not return a `Response`.",
+  message: "An endpoint must return either a `Response`, or a `Promise` that resolves with a `Response`."
+};
 const LocalsNotAnObject = {
   name: "LocalsNotAnObject",
   title: "Value assigned to `locals` is not accepted.",
@@ -296,7 +301,7 @@ class AstroError extends Error {
   }
 }
 
-const ASTRO_VERSION = "4.5.5";
+const ASTRO_VERSION = "4.5.14";
 const REROUTE_DIRECTIVE_HEADER = "X-Astro-Reroute";
 const ROUTE_TYPE_HEADER = "X-Astro-Route-Type";
 const DEFAULT_404_COMPONENT = "astro-default-404";
@@ -335,6 +340,9 @@ Found handlers: ${Object.keys(mod).map((exp) => JSON.stringify(exp)).join(", ")}
     return new Response(null, { status: 500 });
   }
   const response = await handler.call(mod, context);
+  if (!response || response instanceof Response === false) {
+    throw new AstroError(EndpointDidNotReturnAResponse);
+  }
   if (REROUTABLE_STATUS_CODES.includes(response.status)) {
     response.headers.set(REROUTE_DIRECTIVE_HEADER, "no");
   }
@@ -863,29 +871,41 @@ function renderElement$1(name, { props: _props, children = "" }, shouldEscape = 
     }
   }
   if ((children == null || children == "") && voidElementNames.test(name)) {
-    return `<${name}${internalSpreadAttributes(props, shouldEscape)} />`;
+    return `<${name}${internalSpreadAttributes(props, shouldEscape)}>`;
   }
   return `<${name}${internalSpreadAttributes(props, shouldEscape)}>${children}</${name}>`;
 }
-function renderToBufferDestination(bufferRenderFunction) {
-  const bufferChunks = [];
-  const bufferDestination = {
-    write: (chunk) => bufferChunks.push(chunk)
-  };
-  const renderPromise = bufferRenderFunction(bufferDestination);
-  Promise.resolve(renderPromise).catch(() => {
-  });
-  return {
-    async renderToFinalDestination(destination) {
-      for (const chunk of bufferChunks) {
-        destination.write(chunk);
-      }
-      bufferDestination.write = (chunk) => destination.write(chunk);
-      await renderPromise;
+const noop = () => {
+};
+class BufferedRenderer {
+  chunks = [];
+  renderPromise;
+  destination;
+  constructor(bufferRenderFunction) {
+    this.renderPromise = bufferRenderFunction(this);
+    Promise.resolve(this.renderPromise).catch(noop);
+  }
+  write(chunk) {
+    if (this.destination) {
+      this.destination.write(chunk);
+    } else {
+      this.chunks.push(chunk);
     }
-  };
+  }
+  async renderToFinalDestination(destination) {
+    for (const chunk of this.chunks) {
+      destination.write(chunk);
+    }
+    this.destination = destination;
+    await this.renderPromise;
+  }
+}
+function renderToBufferDestination(bufferRenderFunction) {
+  const renderer = new BufferedRenderer(bufferRenderFunction);
+  return renderer;
 }
 const isNode = typeof process !== "undefined" && Object.prototype.toString.call(process) === "[object process]";
+const isDeno = typeof Deno !== "undefined";
 function promiseWithResolvers() {
   let resolve, reject;
   const promise = new Promise((_resolve, _reject) => {
@@ -930,11 +950,11 @@ function renderAllHeadContent(result) {
   }
   return markHTMLString(content);
 }
-function* renderHead() {
-  yield createRenderInstruction({ type: "head" });
+function renderHead() {
+  return createRenderInstruction({ type: "head" });
 }
-function* maybeRenderHead() {
-  yield createRenderInstruction({ type: "maybe-head" });
+function maybeRenderHead() {
+  return createRenderInstruction({ type: "maybe-head" });
 }
 
 const slotString = Symbol.for("astro:slot-string");
@@ -1088,7 +1108,9 @@ function isRenderInstance(obj) {
 }
 
 async function renderChild(destination, child) {
-  child = await child;
+  if (isPromise(child)) {
+    child = await child;
+  }
   if (child instanceof SlotString) {
     destination.write(child);
   } else if (isHTMLString(child)) {
@@ -1317,6 +1339,9 @@ async function renderToReadableStream(result, componentFactory, props, children,
           setTimeout(() => controller.error(e), 0);
         }
       })();
+    },
+    cancel() {
+      result.cancelled = true;
     }
   });
 }
@@ -1364,11 +1389,10 @@ async function renderToAsyncIterable(result, componentFactory, props, children, 
   }
   let error = null;
   let next = promiseWithResolvers();
-  let cancelled = false;
   const buffer = [];
   const iterator = {
     async next() {
-      if (cancelled)
+      if (result.cancelled)
         return { done: true, value: void 0 };
       await next.promise;
       if (error) {
@@ -1394,7 +1418,7 @@ async function renderToAsyncIterable(result, componentFactory, props, children, 
       return returnValue;
     },
     async return() {
-      cancelled = true;
+      result.cancelled = true;
       return { done: true, value: void 0 };
     }
   };
@@ -1455,6 +1479,7 @@ function getHTMLElementName(constructor) {
 
 const needsHeadRenderingSymbol = Symbol.for("astro.needsHeadRendering");
 const rendererAliases = /* @__PURE__ */ new Map([["solid", "solid-js"]]);
+const clientOnlyValues = /* @__PURE__ */ new Set(["solid-js", "react", "preact", "vue", "svelte", "lit"]);
 function guessRenderers(componentUrl) {
   const extname = componentUrl?.split(".").pop();
   switch (extname) {
@@ -1489,7 +1514,7 @@ function removeStaticAstroSlot(html, supportsAstroStaticSlot = true) {
   return html.replace(exp, "");
 }
 async function renderFrameworkComponent(result, displayName, Component, _props, slots = {}) {
-  if (!Component && !_props["client:only"]) {
+  if (!Component && "client:only" in _props === false) {
     throw new Error(
       `Unable to render ${displayName} because it is ${Component}!
 Did you forget to import the component or is it possible there is a typo?`
@@ -1557,11 +1582,12 @@ Did you forget to import the component or is it possible there is a typo?`
     }
   } else {
     if (metadata.hydrateArgs) {
-      const passedName = metadata.hydrateArgs;
-      const rendererName = rendererAliases.has(passedName) ? rendererAliases.get(passedName) : passedName;
-      renderer = renderers.find(
-        ({ name }) => name === `@astrojs/${rendererName}` || name === rendererName
-      );
+      const rendererName = rendererAliases.has(metadata.hydrateArgs) ? rendererAliases.get(metadata.hydrateArgs) : metadata.hydrateArgs;
+      if (clientOnlyValues.has(rendererName)) {
+        renderer = renderers.find(
+          ({ name }) => name === `@astrojs/${rendererName}` || name === rendererName
+        );
+      }
     }
     if (!renderer && validRenderers.length === 1) {
       renderer = validRenderers[0];
@@ -1576,13 +1602,30 @@ Did you forget to import the component or is it possible there is a typo?`
   let componentServerRenderEndTime;
   if (!renderer) {
     if (metadata.hydrate === "only") {
-      throw new AstroError({
-        ...NoClientOnlyHint,
-        message: NoClientOnlyHint.message(metadata.displayName),
-        hint: NoClientOnlyHint.hint(
-          probableRendererNames.map((r) => r.replace("@astrojs/", "")).join("|")
-        )
-      });
+      const rendererName = rendererAliases.has(metadata.hydrateArgs) ? rendererAliases.get(metadata.hydrateArgs) : metadata.hydrateArgs;
+      if (clientOnlyValues.has(rendererName)) {
+        const plural = validRenderers.length > 1;
+        throw new AstroError({
+          ...NoMatchingRenderer,
+          message: NoMatchingRenderer.message(
+            metadata.displayName,
+            metadata?.componentUrl?.split(".").pop(),
+            plural,
+            validRenderers.length
+          ),
+          hint: NoMatchingRenderer.hint(
+            formatList(probableRendererNames.map((r) => "`" + r + "`"))
+          )
+        });
+      } else {
+        throw new AstroError({
+          ...NoClientOnlyHint,
+          message: NoClientOnlyHint.message(metadata.displayName),
+          hint: NoClientOnlyHint.hint(
+            probableRendererNames.map((r) => r.replace("@astrojs/", "")).join("|")
+          )
+        });
+      }
     } else if (typeof Component !== "string") {
       const matchingRenderers = validRenderers.filter(
         (r) => probableRendererNames.includes(r.name)
@@ -1626,6 +1669,12 @@ If you're still stuck, please open an issue on GitHub or join us at https://astr
     }
   } else {
     if (metadata.hydrate === "only") {
+      const rendererName = rendererAliases.has(metadata.hydrateArgs) ? rendererAliases.get(metadata.hydrateArgs) : metadata.hydrateArgs;
+      if (!clientOnlyValues.has(rendererName)) {
+        console.warn(
+          `The client:only directive for ${metadata.displayName} is not recognized. The renderer ${renderer.name} will be used. If you intended to use a different renderer, please provide a valid client:only directive.`
+        );
+      }
       html = await renderSlotToString(result, slots?.fallback);
     } else {
       const componentRenderStartTime = performance.now();
@@ -1780,19 +1829,27 @@ function renderAstroComponent(result, displayName, Component, props, slots = {})
 }
 async function renderComponent(result, displayName, Component, props, slots = {}) {
   if (isPromise(Component)) {
-    Component = await Component;
+    Component = await Component.catch(handleCancellation);
   }
   if (isFragmentComponent(Component)) {
-    return await renderFragmentComponent(result, slots);
+    return await renderFragmentComponent(result, slots).catch(handleCancellation);
   }
   props = normalizeProps(props);
   if (isHTMLComponent(Component)) {
-    return await renderHTMLComponent(result, Component, props, slots);
+    return await renderHTMLComponent(result, Component, props, slots).catch(handleCancellation);
   }
   if (isAstroComponentFactory(Component)) {
     return renderAstroComponent(result, displayName, Component, props, slots);
   }
-  return await renderFrameworkComponent(result, displayName, Component, props, slots);
+  return await renderFrameworkComponent(result, displayName, Component, props, slots).catch(
+    handleCancellation
+  );
+  function handleCancellation(e) {
+    if (result.cancelled)
+      return { render() {
+      } };
+    throw e;
+  }
 }
 function normalizeProps(props) {
   if (props["class:list"] !== void 0) {
@@ -1809,17 +1866,15 @@ async function renderComponentToString(result, displayName, Component, props, sl
   let str = "";
   let renderedFirstPageChunk = false;
   let head = "";
-  if (nonAstroPageNeedsHeadInjection(Component)) {
-    for (const headChunk of maybeRenderHead()) {
-      head += chunkToString(result, headChunk);
-    }
+  if (isPage && !result.partial && nonAstroPageNeedsHeadInjection(Component)) {
+    head += chunkToString(result, maybeRenderHead());
   }
   try {
     const destination = {
       write(chunk) {
-        if (isPage && !renderedFirstPageChunk) {
+        if (isPage && !result.partial && !renderedFirstPageChunk) {
           renderedFirstPageChunk = true;
-          if (!result.partial && !/<!doctype html/i.test(String(chunk))) {
+          if (!/<!doctype html/i.test(String(chunk))) {
             const doctype = result.compressHTML ? "<!DOCTYPE html>" : "<!DOCTYPE html>\n";
             str += doctype + head;
           }
@@ -1846,25 +1901,7 @@ function nonAstroPageNeedsHeadInjection(pageComponent) {
 }
 
 const ClientOnlyPlaceholder = "astro-client-only";
-class Skip {
-  constructor(vnode) {
-    this.vnode = vnode;
-    this.count = 0;
-  }
-  count;
-  increment() {
-    this.count++;
-  }
-  haveNoTried() {
-    return this.count === 0;
-  }
-  isCompleted() {
-    return this.count > 2;
-  }
-  static symbol = Symbol("astro:jsx:skip");
-}
-let originalConsoleError;
-let consoleFilterRefs = 0;
+const hasTriedRenderComponentSymbol = Symbol("hasTriedRenderComponent");
 async function renderJSX(result, vnode) {
   switch (true) {
     case vnode instanceof HTMLString:
@@ -1883,19 +1920,9 @@ async function renderJSX(result, vnode) {
         (await Promise.all(vnode.map((v) => renderJSX(result, v)))).join("")
       );
   }
-  let skip;
-  if (vnode.props) {
-    if (vnode.props[Skip.symbol]) {
-      skip = vnode.props[Skip.symbol];
-    } else {
-      skip = new Skip(vnode);
-    }
-  } else {
-    skip = new Skip(vnode);
-  }
-  return renderJSXVNode(result, vnode, skip);
+  return renderJSXVNode(result, vnode);
 }
-async function renderJSXVNode(result, vnode, skip) {
+async function renderJSXVNode(result, vnode) {
   if (isVNode(vnode)) {
     switch (true) {
       case !vnode.type: {
@@ -1942,36 +1969,20 @@ Did you forget to import the component or is it possible there is a typo?`);
         }
         _slots.default.push(child);
       };
-      if (typeof vnode.type === "function" && vnode.type["astro:renderer"]) {
-        skip.increment();
-      }
       if (typeof vnode.type === "function" && vnode.props["server:root"]) {
         const output2 = await vnode.type(vnode.props ?? {});
         return await renderJSX(result, output2);
       }
       if (typeof vnode.type === "function") {
-        if (skip.haveNoTried() || skip.isCompleted()) {
-          useConsoleFilter();
-          try {
-            const output2 = await vnode.type(vnode.props ?? {});
-            let renderResult;
-            if (output2?.[AstroJSX]) {
-              renderResult = await renderJSXVNode(result, output2, skip);
-              return renderResult;
-            } else if (!output2) {
-              renderResult = await renderJSXVNode(result, output2, skip);
-              return renderResult;
-            }
-          } catch (e) {
-            if (skip.isCompleted()) {
-              throw e;
-            }
-            skip.increment();
-          } finally {
-            finishUsingConsoleFilter();
+        if (vnode.props[hasTriedRenderComponentSymbol]) {
+          const output2 = await vnode.type(vnode.props ?? {});
+          if (output2?.[AstroJSX] || !output2) {
+            return await renderJSXVNode(result, output2);
+          } else {
+            return;
           }
         } else {
-          skip.increment();
+          vnode.props[hasTriedRenderComponentSymbol] = true;
         }
       }
       const { children = null, ...props } = vnode.props ?? {};
@@ -1980,7 +1991,7 @@ Did you forget to import the component or is it possible there is a typo?`);
       };
       extractSlots2(children);
       for (const [key, value] of Object.entries(props)) {
-        if (value["$$slot"]) {
+        if (value?.["$$slot"]) {
           _slots[key] = value;
           delete props[key];
         }
@@ -1997,7 +2008,6 @@ Did you forget to import the component or is it possible there is a typo?`);
         );
       }
       await Promise.all(slotPromises);
-      props[Skip.symbol] = skip;
       let output;
       if (vnode.type === ClientOnlyPlaceholder && vnode.props["client:only"]) {
         output = await renderComponentToString(
@@ -2035,27 +2045,6 @@ function prerenderElementChildren(tag, children) {
     return children;
   }
 }
-function useConsoleFilter() {
-  consoleFilterRefs++;
-  if (!originalConsoleError) {
-    originalConsoleError = console.error;
-    try {
-      console.error = filteredConsoleError;
-    } catch (error) {
-    }
-  }
-}
-function finishUsingConsoleFilter() {
-  consoleFilterRefs--;
-}
-function filteredConsoleError(msg, ...rest) {
-  if (consoleFilterRefs > 0 && typeof msg === "string") {
-    const isKnownReactHookError = msg.includes("Warning: Invalid hook call.") && msg.includes("https://reactjs.org/link/invalid-hook-call");
-    if (isKnownReactHookError)
-      return;
-  }
-  originalConsoleError(msg, ...rest);
-}
 
 async function renderPage(result, componentFactory, props, children, streaming, route) {
   if (!isAstroComponentFactory(componentFactory)) {
@@ -2081,7 +2070,7 @@ async function renderPage(result, componentFactory, props, children, streaming, 
   result._metadata.headInTree = result.componentMetadata.get(componentFactory.moduleId)?.containsHead ?? false;
   let body;
   if (streaming) {
-    if (isNode) {
+    if (isNode && !isDeno) {
       const nodeBody = await renderToAsyncIterable(
         result,
         componentFactory,
@@ -2132,4 +2121,4 @@ function spreadAttributes(values = {}, _name, { class: scopedClassName } = {}) {
   return markHTMLString(output);
 }
 
-export { AstroError as A, chunkToString as B, LocalsNotAnObject as C, DEFAULT_404_COMPONENT as D, ExpectedImage as E, FailedToFetchRemoteImageDimensions as F, GetStaticPathsRequired as G, clientLocalsSymbol as H, IncompatibleDescriptorOptions as I, clientAddressSymbol as J, ClientAddressNotAvailable as K, LocalImageUsedWrongly as L, MissingImageDimension as M, NoMatchingStaticPathFound as N, ASTRO_VERSION as O, PageNumberParamNotFound as P, responseSentSymbol as Q, ResponseSentError as R, StaticClientAddressNotAvailable as S, AstroResponseHeadersReassigned as T, UnsupportedImageFormat as U, renderEndpoint as V, renderPage as W, REROUTABLE_STATUS_CODES as X, UnsupportedImageConversion as a, MissingSharp as b, createAstro as c, createComponent as d, addAttribute as e, renderSlot as f, renderComponent as g, renderHead as h, InvalidImageService as i, ExpectedImageOptions as j, ImageMissingAlt as k, MiddlewareNoDataOrNextCalled as l, maybeRenderHead as m, MiddlewareNotAResponse as n, ROUTE_TYPE_HEADER as o, REROUTE_DIRECTIVE_HEADER as p, InvalidGetStaticPathsReturn as q, renderTemplate as r, spreadAttributes as s, InvalidGetStaticPathsEntry as t, GetStaticPathsExpectedParams as u, GetStaticPathsInvalidRouteParam as v, PrerenderDynamicEndpointPathCollide as w, ReservedSlotName as x, renderSlotToString as y, renderJSX as z };
+export { AstroError as A, chunkToString as B, LocalsNotAnObject as C, DEFAULT_404_COMPONENT as D, ExpectedImage as E, FailedToFetchRemoteImageDimensions as F, GetStaticPathsRequired as G, clientLocalsSymbol as H, IncompatibleDescriptorOptions as I, clientAddressSymbol as J, ClientAddressNotAvailable as K, LocalImageUsedWrongly as L, MissingImageDimension as M, NoMatchingStaticPathFound as N, ASTRO_VERSION as O, PageNumberParamNotFound as P, responseSentSymbol as Q, ResponseSentError as R, StaticClientAddressNotAvailable as S, AstroResponseHeadersReassigned as T, UnsupportedImageFormat as U, renderPage as V, renderEndpoint as W, REROUTABLE_STATUS_CODES as X, UnsupportedImageConversion as a, MissingSharp as b, createAstro as c, createComponent as d, addAttribute as e, renderSlot as f, renderComponent as g, renderHead as h, InvalidImageService as i, ExpectedImageOptions as j, ImageMissingAlt as k, MiddlewareNoDataOrNextCalled as l, maybeRenderHead as m, MiddlewareNotAResponse as n, ROUTE_TYPE_HEADER as o, REROUTE_DIRECTIVE_HEADER as p, InvalidGetStaticPathsReturn as q, renderTemplate as r, spreadAttributes as s, InvalidGetStaticPathsEntry as t, GetStaticPathsExpectedParams as u, GetStaticPathsInvalidRouteParam as v, PrerenderDynamicEndpointPathCollide as w, ReservedSlotName as x, renderSlotToString as y, renderJSX as z };

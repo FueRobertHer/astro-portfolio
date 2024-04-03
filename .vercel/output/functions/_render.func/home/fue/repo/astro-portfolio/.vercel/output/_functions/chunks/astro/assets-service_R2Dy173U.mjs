@@ -1,4 +1,4 @@
-import { A as AstroError, E as ExpectedImage, L as LocalImageUsedWrongly, M as MissingImageDimension, U as UnsupportedImageFormat, I as IncompatibleDescriptorOptions, a as UnsupportedImageConversion, b as MissingSharp } from '../astro_DRYuNIHL.mjs';
+import { A as AstroError, E as ExpectedImage, L as LocalImageUsedWrongly, M as MissingImageDimension, U as UnsupportedImageFormat, I as IncompatibleDescriptorOptions, a as UnsupportedImageConversion, b as MissingSharp } from '../astro_DmV6Xgd_.mjs';
 
 function appendForwardSlash(path) {
   return path.endsWith("/") ? path : path + "/";
@@ -61,6 +61,9 @@ function isESMImportedImage(src) {
 }
 function isRemoteImage(src) {
   return typeof src === "string";
+}
+async function resolveSrc(src) {
+  return typeof src === "object" && "then" in src ? (await src).default ?? await src : src;
 }
 
 function matchPattern(url, remotePattern) {
@@ -381,4 +384,4 @@ const sharp$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: sharp_default
 }, Symbol.toStringTag, { value: 'Module' }));
 
-export { DEFAULT_HASH_PROPS as D, isESMImportedImage as a, isLocalService as b, isRemotePath as c, isRemoteAllowed as d, appendForwardSlash as e, fileExtension as f, collapseDuplicateSlashes as g, sharp$1 as h, isRemoteImage as i, joinPaths as j, prependForwardSlash as p, removeTrailingForwardSlash as r, slash as s, trimSlashes as t };
+export { DEFAULT_HASH_PROPS as D, isESMImportedImage as a, isLocalService as b, isRemotePath as c, isRemoteAllowed as d, appendForwardSlash as e, fileExtension as f, removeTrailingForwardSlash as g, collapseDuplicateSlashes as h, isRemoteImage as i, joinPaths as j, sharp$1 as k, prependForwardSlash as p, resolveSrc as r, slash as s, trimSlashes as t };

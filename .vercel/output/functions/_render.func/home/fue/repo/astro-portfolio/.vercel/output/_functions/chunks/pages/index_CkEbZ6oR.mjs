@@ -1,8 +1,8 @@
 /* empty css                          */
-import { c as createAstro, d as createComponent, r as renderTemplate, g as renderComponent, m as maybeRenderHead } from '../astro_DRYuNIHL.mjs';
+import { c as createAstro, d as createComponent, r as renderTemplate, g as renderComponent, m as maybeRenderHead } from '../astro_DmV6Xgd_.mjs';
 import 'kleur/colors';
 import 'html-escaper';
-import { $ as $$BaseLayout } from './about_CRNB5pc0.mjs';
+import { $ as $$BaseLayout } from './about_CBUpld6L.mjs';
 
 const $$Astro = createAstro();
 const $$Index = createComponent(async ($$result, $$props, $$slots) => {
