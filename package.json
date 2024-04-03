@@ -1,11 +1,11 @@
 {
-  "name": "@example/basics",
+  "name": "fueher-portfolio-astro",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build --remote",
+    "build": "astro check && build",
     "preview": "astro preview",
     "astro": "astro"
   },
