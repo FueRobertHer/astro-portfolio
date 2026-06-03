@@ -29,9 +29,9 @@ const ThemeToggleButton = () => {
   const label = `Switch to ${nextTheme} theme`;
 
   return (
-    <div className="flex w-fit justify-between rounded-full border-2 border-current hover:border-[#366CC6] dark:hover:border-[#C63D32]">
+    <div className="flex w-fit justify-between rounded-full border-2 border-current hover:border-[#366CC6] dark:hover:border-[#E05243]">
       <button
-        className="group flex w-fit justify-between *:transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:focus-visible:outline-[#C63D32]"
+        className="group flex w-fit justify-between *:transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:focus-visible:outline-[#E05243]"
         title={label}
         aria-label={label}
         aria-pressed={theme === "dark"}

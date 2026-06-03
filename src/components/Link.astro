@@ -4,6 +4,6 @@ const href = props.href ?? "";
 const isExternal = href.startsWith("http");
 const rel = props.rel ?? (props.target === "_blank" || isExternal ? "noopener noreferrer" : undefined);
 ---
-<a class=`text-blue-700 underline-offset-4 hover:text-blue-400 hover:underline dark:text-blue-200 dark:hover:text-blue-400 ${props.class ?? ""}` href={props.href} target={props.target} rel={rel}>
+<a class={`text-[#366CC6] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:text-[#E05243] dark:focus-visible:outline-[#E05243] ${props.class ?? ""}`} href={props.href} target={props.target} rel={rel}>
   <slot/>
 </a>

@@ -10,14 +10,14 @@ const { project, compact = false } = Astro.props;
 ---
 
 <article
-  class="group flex h-full flex-col rounded-md border border-stone-300 bg-stone-100/70 p-5 transition-colors hover:border-[#366CC6] dark:border-stone-800 dark:bg-stone-900/70 dark:hover:border-[#C63D32]"
+  class="group flex h-full flex-col rounded-md border border-stone-300 bg-stone-100/70 p-5 transition-colors hover:border-[#366CC6] dark:border-stone-800 dark:bg-stone-900/70 dark:hover:border-[#E05243]"
 >
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <p class="text-xs font-bold uppercase text-[#C63D32]">
+    <p class="text-xs font-bold uppercase text-[#C63D32] dark:text-[#E05243]">
       {project.eyebrow}
     </p>
     {project.featured && (
-      <span class="rounded-md bg-[#366CC6]/10 px-2 py-1 text-xs font-bold text-[#366CC6] dark:bg-[#C63D32]/15 dark:text-[#C63D32]">
+      <span class="rounded-md bg-[#366CC6]/10 px-2 py-1 text-xs font-bold text-[#366CC6] dark:bg-[#E05243]/15 dark:text-[#E05243]">
         Featured
       </span>
     )}
@@ -39,7 +39,7 @@ const { project, compact = false } = Astro.props;
   <ul class={`${compact ? "mt-4" : "mt-5"} space-y-2 text-sm text-stone-600 dark:text-stone-300`}>
     {project.highlights.slice(0, compact ? 2 : 3).map((highlight) => (
       <li class="flex gap-2">
-        <span class="mt-2 size-1.5 flex-none rounded-full bg-[#366CC6] dark:bg-[#C63D32]" aria-hidden="true" />
+        <span class="mt-2 size-1.5 flex-none rounded-full bg-[#366CC6] dark:bg-[#E05243]" aria-hidden="true" />
         <span>{highlight}</span>
       </li>
     ))}
@@ -60,7 +60,7 @@ const { project, compact = false } = Astro.props;
           href={link.href}
           target={link.href.startsWith("http") ? "_blank" : undefined}
           rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-          class="text-sm font-bold text-[#366CC6] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:text-[#C63D32] dark:focus-visible:outline-[#C63D32]"
+          class="text-sm font-bold text-[#366CC6] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:text-[#E05243] dark:focus-visible:outline-[#E05243]"
         >
           {link.label}
         </a>

@@ -12,7 +12,7 @@ const isActive = path === href
 <a
   href={href}
   aria-current={isActive ? "page" : undefined}
-  class={`border-b-2 py-2 text-sm font-bold uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:focus-visible:outline-[#C63D32] ${isActive ? "border-[#366CC6] text-[#366CC6] dark:border-[#C63D32] dark:text-[#C63D32]" : "border-transparent hover:border-stone-400 hover:text-[#366CC6] dark:hover:border-stone-600 dark:hover:text-[#C63D32]"}`}
+  class={`border-b-2 py-2 text-sm font-bold uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:focus-visible:outline-[#E05243] ${isActive ? "border-[#366CC6] text-[#366CC6] dark:border-[#E05243] dark:text-[#E05243]" : "border-transparent hover:border-stone-400 hover:text-[#366CC6] dark:hover:border-stone-600 dark:hover:text-[#E05243]"}`}
 >
   <slot />
 </a>
