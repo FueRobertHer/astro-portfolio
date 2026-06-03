@@ -25,7 +25,7 @@ export const projects: Project[] = [
     highlights: [
       "Migrated the stack to Astro 6, React 19, and Tailwind 4.",
       "Kept interactive behavior scoped to small React islands.",
-      "Added production preview checks through the Vercel GitHub flow.",
+      "Added deployment previews through the Vercel GitHub flow.",
     ],
     links: [
       {
@@ -87,7 +87,7 @@ export const projects: Project[] = [
     title: "TabbyNotes",
     eyebrow: "Browser extension",
     summary:
-      "A React-powered Chrome extension experiment for keeping lightweight notes close to the browser workflow.",
+      "A React-powered Chrome extension for keeping lightweight notes close to the browser workflow.",
     role: "Built the extension UI and browser integration.",
     stack: ["React", "JavaScript", "Chrome Extension"],
     highlights: [

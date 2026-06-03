@@ -2,10 +2,8 @@
   fueher.com
 </h1>
 <p align="center">
-  The second iteration of <a href="https://fueher.com" target="_blank">fueher.com</a> built with <a href="https://astro.build" target="_blank">Astro</a> and hosted with <a href="https://vercel.com" target="_blank">Vercel</a>
+  Personal portfolio for <a href="https://fueher.com" target="_blank">Fue Her</a>, built with <a href="https://astro.build" target="_blank">Astro</a> and hosted with <a href="https://vercel.com" target="_blank">Vercel</a>.
 </p>
-
-
 
 ## Commands
 

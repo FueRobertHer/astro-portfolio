@@ -12,26 +12,29 @@ interface Link {
 const links: Link[] = [
   {
     text: "Home",
-    href:"/"
+    href: "/",
   },
   {
     text: "About",
-    href:"/about"
-  }
-]
+    href: "/about",
+  },
+];
 ---
+
 <header class="flex w-full items-center justify-between px-5 py-3 sm:px-8">
   <a class="size-8" href="/" aria-label="Fue Her home">
     <Logo />
   </a>
-  <div class="hidden items-center justify-between sm:flex sm:w-fit sm:justify-normal">
-    {links.map(link => (
-      <span class="mx-4">
-        <NavLink href={link.href}>
-          {link.text}
-        </NavLink>
-      </span>
-    ))}
+  <div
+    class="hidden items-center justify-between sm:flex sm:w-fit sm:justify-normal"
+  >
+    {
+      links.map((link) => (
+        <span class="mx-4">
+          <NavLink href={link.href}>{link.text}</NavLink>
+        </span>
+      ))
+    }
     <span class="mx-4">
       <ThemeToggleButton client:visible />
     </span>
@@ -42,13 +45,13 @@ const links: Link[] = [
         <div>
           <ThemeToggleButton client:visible />
         </div>
-        {links.map(link => (
-          <div>
-            <NavLink href={link.href}>
-              {link.text}
-            </NavLink>
-          </div>
-        ))}
+        {
+          links.map((link) => (
+            <div>
+              <NavLink href={link.href}>{link.text}</NavLink>
+            </div>
+          ))
+        }
       </menu>
     </Menu>
   </div>
