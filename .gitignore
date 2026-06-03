@@ -1,4 +1,6 @@
 # build output
+.astro/
+.vercel/
 dist/
 .output/
 
