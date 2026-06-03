@@ -17,18 +17,14 @@ const links: Link[] = [
   {
     text: "About",
     href:"/about"
-  },
-  {
-    text: "Projects",
-    href:"/projects"
   }
 ]
 ---
-<header class="flex w-full justify-between py-4 sm:px-8">
-  <a class="size-8 mx-6" href="/" aria-label="Home">
+<header class="flex w-full items-center justify-between px-5 py-3 sm:px-8">
+  <a class="size-8" href="/" aria-label="Fue Her home">
     <Logo />
   </a>
-  <div class=" hidden sm:flex items-center justify-between w-full sm:w-fit sm:justify-normal">
+  <div class="hidden items-center justify-between sm:flex sm:w-fit sm:justify-normal">
     {links.map(link => (
       <span class="mx-4">
         <NavLink href={link.href}>
@@ -40,9 +36,9 @@ const links: Link[] = [
       <ThemeToggleButton client:visible />
     </span>
   </div>
-  <div class=" sm:hidden">
+  <div class="sm:hidden">
     <Menu client:visible>
-      <menu class="flex flex-col items-center text-lg gap-4">
+      <menu class="flex flex-col items-center gap-4 text-lg">
         <div>
           <ThemeToggleButton client:visible />
         </div>

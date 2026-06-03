@@ -1,42 +1,90 @@
 ---
-import Link from '../components/Link.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ContentLayout from '../layouts/ContentLayout.astro';
-
+import Link from "../components/Link.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="About | Fue Her" description="Fue's personal statement about himself, his skills, and what he likes to do for fun.">
-	<ContentLayout header="Hi, I'm Fue.">
-		<div class=" *:my-4">
-			<p>
-				My name is pronounced /fu:/; like 'food' without the 'd'. 
-			</p>
-			<p>
-				Technology has always been a passion of mine but I made a professional transition
-				into the field in 2019. Since then, I've been fortunate enough to find myself in
-				amazing supportive teams at a start-up and a large corporation.
-			</p>
-			<p>
-				My skills lean frontend, but my focus has always been as a full stack dev building
-				reliable, accessible, and performant systems that can scale. I beleive there's always room for
-				improvment and something new to learn so you might catch me playing with some new tools and tech
-				every now and again.
-			</p>
-			<p>
-				When I'm not coding, you'll probably still find me at the computer playing video games, reading
-				the latest web novel I'm following, or watching my favorite
-				<Link href="https://www.dropout.tv/game-changer" target="_blank" class="group">
-					Game Changer.
-					<img 
-						src="/sam.png" 
-						alt=`Sam Reich with caption, "I've been here the whole time"`
-						height="100"
-						width="108"
-						aria-hidden="true"
-						class=" opacity-0 -z-10 absolute bottom-0 right-0 transition-opacity duration-1000 group-focus:opacity-100 group-hover:opacity-100 group-hover:z-10 group-focus:z-10 "/>
-				</Link>
-				Away from a screen I spend time with my partner gardening, cooking, or taking in nature on a hike.
-			</p>
-		</div>
-	</ContentLayout>
+<BaseLayout
+  title="About | Fue Her"
+  description="Learn about Fue Her, a full-stack engineer focused on accessible interfaces, reliable systems, and thoughtful web product development."
+>
+  <main class="py-12 sm:py-20">
+    <section class="max-w-3xl">
+      <p class="text-sm font-bold uppercase text-[#366CC6] dark:text-[#E05243]">
+        About
+      </p>
+      <h1 class="mt-3 text-4xl font-black text-stone-950 sm:text-5xl dark:text-stone-50">
+        Hi, I&apos;m Fue.
+      </h1>
+      <p class="mt-5 text-lg leading-8 text-stone-600 dark:text-stone-300">
+        My name is pronounced /fu:/, like &quot;food&quot; without the
+        &quot;d&quot;. I&apos;m a full-stack engineer who likes building clear,
+        useful software with teams that care about both people and craft.
+      </p>
+    </section>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+      <aside class="h-fit rounded-md border border-stone-300 bg-stone-100/70 p-5 dark:border-stone-800 dark:bg-stone-900/70">
+        <h2 class="text-lg font-black text-stone-950 dark:text-stone-50">
+          How I Work
+        </h2>
+        <ul class="mt-4 space-y-3 text-sm leading-6 text-stone-600 dark:text-stone-300">
+          <li>Understand the core problem before reaching for an implementation.</li>
+          <li>Identify the user, product, and technical requirements that shape the work.</li>
+          <li>Break the solution into clear, testable pieces that can ship responsibly.</li>
+          <li>Implement in a maintainable way, with accessibility, reliability, and future changes in mind.</li>
+        </ul>
+      </aside>
+
+      <section class="space-y-8">
+        <article>
+          <h2 class="text-2xl font-black text-stone-950 dark:text-stone-50">
+            Background
+          </h2>
+          <div class="mt-3 space-y-4 leading-8 text-stone-600 dark:text-stone-300">
+            <p>
+              Technology has always been a passion of mine, and I made a
+              professional transition into the field in 2019. Since then,
+              I&apos;ve been fortunate to work with supportive teams at both a
+              start-up and a large corporation.
+            </p>
+            <p>
+              My skills lean frontend, but my focus has always been full-stack:
+              building reliable, accessible, and performant systems that can
+              scale. I believe there&apos;s always room for improvement and
+              something new to learn, so you might catch me trying out new tools
+              and patterns along the way.
+            </p>
+          </div>
+        </article>
+
+        <article>
+          <h2 class="text-2xl font-black text-stone-950 dark:text-stone-50">
+            Outside Code
+          </h2>
+          <div class="mt-3 space-y-4 leading-8 text-stone-600 dark:text-stone-300">
+            <p>
+              When I&apos;m not coding, you&apos;ll probably still find me at
+              the computer playing video games, reading the latest web novel
+              I&apos;m following, or watching my favorite
+              <Link href="https://www.dropout.tv/game-changer" target="_blank" class="group">
+                Game Changer.
+                <img
+                  src="/sam.png"
+                  alt=""
+                  height="100"
+                  width="108"
+                  aria-hidden="true"
+                  class="absolute bottom-0 right-0 -z-10 opacity-0 transition-opacity duration-1000 group-focus:z-10 group-focus:opacity-100 group-hover:z-10 group-hover:opacity-100"
+                />
+              </Link>
+            </p>
+            <p>
+              Away from a screen, I spend time with my partner gardening,
+              cooking, or taking in nature on a hike.
+            </p>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
 </BaseLayout>
