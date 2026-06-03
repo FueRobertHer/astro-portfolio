@@ -1,0 +1,70 @@
+---
+import type { Project } from "../data/projects";
+
+export interface Props {
+  project: Project;
+  compact?: boolean;
+}
+
+const { project, compact = false } = Astro.props;
+---
+
+<article
+  class="group flex h-full flex-col rounded-md border border-stone-300 bg-stone-100/70 p-5 transition-colors hover:border-[#366CC6] dark:border-stone-800 dark:bg-stone-900/70 dark:hover:border-[#C63D32]"
+>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="text-xs font-bold uppercase text-[#C63D32]">
+      {project.eyebrow}
+    </p>
+    {project.featured && (
+      <span class="rounded-md bg-[#366CC6]/10 px-2 py-1 text-xs font-bold text-[#366CC6] dark:bg-[#C63D32]/15 dark:text-[#C63D32]">
+        Featured
+      </span>
+    )}
+  </div>
+
+  <h2 class={`${compact ? "mt-3 text-xl" : "mt-4 text-2xl"} font-black text-stone-900 dark:text-stone-100`}>
+    {project.title}
+  </h2>
+  <p class="mt-3 leading-7 text-stone-600 dark:text-stone-300">
+    {project.summary}
+  </p>
+
+  {!compact && (
+    <p class="mt-4 text-sm font-medium text-stone-700 dark:text-stone-200">
+      {project.role}
+    </p>
+  )}
+
+  <ul class={`${compact ? "mt-4" : "mt-5"} space-y-2 text-sm text-stone-600 dark:text-stone-300`}>
+    {project.highlights.slice(0, compact ? 2 : 3).map((highlight) => (
+      <li class="flex gap-2">
+        <span class="mt-2 size-1.5 flex-none rounded-full bg-[#366CC6] dark:bg-[#C63D32]" aria-hidden="true" />
+        <span>{highlight}</span>
+      </li>
+    ))}
+  </ul>
+
+  <ul class="mt-5 flex flex-wrap gap-2" aria-label={`${project.title} stack`}>
+    {project.stack.map((item) => (
+      <li class="rounded-md border border-stone-300 px-2.5 py-1 text-xs font-bold text-stone-700 dark:border-stone-700 dark:text-stone-200">
+        {item}
+      </li>
+    ))}
+  </ul>
+
+  <div class="mt-6 flex flex-wrap gap-3">
+    {
+      project.links.map((link) => (
+        <a
+          href={link.href}
+          target={link.href.startsWith("http") ? "_blank" : undefined}
+          rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+          class="text-sm font-bold text-[#366CC6] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:text-[#C63D32] dark:focus-visible:outline-[#C63D32]"
+        >
+          {link.label}
+        </a>
+      ))
+    }
+  </div>
+</article>

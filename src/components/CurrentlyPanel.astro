@@ -1,0 +1,44 @@
+---
+const stack = ["Astro", "React", "TypeScript", "Tailwind", "Vercel"];
+---
+
+<aside
+  class="w-full rounded-md border border-stone-300 bg-stone-100/80 p-5 shadow-[0_1rem_3rem_rgba(28,28,28,0.08)] dark:border-stone-800 dark:bg-stone-900/80"
+  aria-label="Current engineering focus"
+>
+  <p class="text-xs font-bold uppercase text-[#C63D32] dark:text-[#C63D32]">
+    Currently
+  </p>
+  <h2 class="mt-3 text-xl font-black text-stone-900 dark:text-stone-100">
+    Building useful web experiences with a practical full-stack lens.
+  </h2>
+  <p class="mt-3 text-sm leading-6 text-stone-600 dark:text-stone-300">
+    I care about interfaces that feel clear, systems that stay maintainable,
+    and teams that keep learning while shipping.
+  </p>
+
+  <dl class="mt-6 grid gap-4 text-sm">
+    <div>
+      <dt class="font-bold text-stone-900 dark:text-stone-100">Focus</dt>
+      <dd class="mt-1 text-stone-600 dark:text-stone-300">
+        Accessible frontend, reliable product flows, and performance-minded delivery.
+      </dd>
+    </div>
+    <div>
+      <dt class="font-bold text-stone-900 dark:text-stone-100">Recent work</dt>
+      <dd class="mt-1 text-stone-600 dark:text-stone-300">
+        Modernizing this portfolio to Astro 6, React 19, Tailwind 4, and Vercel previews.
+      </dd>
+    </div>
+  </dl>
+
+  <ul class="mt-6 flex flex-wrap gap-2" aria-label="Core stack">
+    {
+      stack.map((item) => (
+        <li class="rounded-md border border-stone-300 px-2.5 py-1 text-xs font-bold text-stone-700 dark:border-stone-700 dark:text-stone-200">
+          {item}
+        </li>
+      ))
+    }
+  </ul>
+</aside>

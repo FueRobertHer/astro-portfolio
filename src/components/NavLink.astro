@@ -9,6 +9,10 @@ const path = Astro.url.pathname;
 const isActive = path === href
 ---
 
-<a href={href} class={`py-2 font-bold uppercase hover:text-[#366CC6] dark:hover:text-[#C63D32] ${isActive && "text-[#366CC6] dark:text-[#C63D32]"}`}>
+<a
+  href={href}
+  aria-current={isActive ? "page" : undefined}
+  class={`border-b-2 py-2 text-sm font-bold uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:focus-visible:outline-[#C63D32] ${isActive ? "border-[#366CC6] text-[#366CC6] dark:border-[#C63D32] dark:text-[#C63D32]" : "border-transparent hover:border-stone-400 hover:text-[#366CC6] dark:hover:border-stone-600 dark:hover:text-[#C63D32]"}`}
+>
   <slot />
 </a>
