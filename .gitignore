@@ -20,3 +20,6 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# scratch / temporary working files
+tmp_rovodev_*.html

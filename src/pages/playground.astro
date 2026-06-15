@@ -1,0 +1,206 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Games and experiments I host here. Add an entry as each one ships.
+interface Game {
+  title: string;
+  blurb: string;
+  status: "Playable" | "In progress";
+  href?: string;
+}
+
+const games: Game[] = [];
+---
+
+<BaseLayout
+  title="Playground | Fue Her"
+  description="A hidden playground where Fue Her hosts personal games and experiments."
+>
+  <main class="py-12 sm:py-20">
+    <section class="max-w-3xl animate-fade-up">
+      <p class="text-sm font-bold uppercase text-accent dark:text-accent-dark">
+        You found the secret page
+      </p>
+      <h1
+        class="mt-3 text-4xl font-black text-stone-950 sm:text-5xl dark:text-stone-50"
+      >
+        Playground
+      </h1>
+      <p class="mt-5 text-lg leading-8 text-stone-600 dark:text-stone-300">
+        A hidden corner for the games and little experiments I build for fun.
+        Nothing here is polished, that&apos;s the point. Check back as new things
+        appear.
+      </p>
+    </section>
+
+    <section class="mt-10" aria-label="Games">
+      <div
+        id="tg-area"
+        class="tg-area h-72 w-full overflow-hidden rounded-md border border-dashed border-stone-300 bg-gradient-to-b from-emerald-50 to-stone-100 sm:h-80 dark:border-stone-700 dark:from-stone-900 dark:to-stone-950"
+        aria-label="Interactive area"
+      >
+        <span id="tg-broccoli-plant" class="tg-plant" aria-hidden="true">🥦</span>
+      </div>
+
+      {
+        games.length > 0 && (
+          <ul class="mt-5 grid gap-5 lg:grid-cols-2">
+            {games.map((game) => (
+              <li class="flex h-full flex-col rounded-md border border-stone-300 bg-stone-100/70 p-5 transition duration-200 hover:-translate-y-1 hover:border-accent hover:shadow-lg dark:border-stone-800 dark:bg-stone-900/70 dark:hover:border-accent-dark">
+                <div class="flex items-center justify-between gap-3">
+                  <h2 class="text-xl font-black text-stone-900 dark:text-stone-100">
+                    {game.title}
+                  </h2>
+                  <span class="rounded-md bg-accent/10 px-2 py-1 text-xs font-bold text-accent dark:bg-accent-dark/15 dark:text-accent-dark">
+                    {game.status}
+                  </span>
+                </div>
+                <p class="mt-3 leading-7 text-stone-600 dark:text-stone-300">
+                  {game.blurb}
+                </p>
+                {game.href && (
+                  <a
+                    href={game.href}
+                    class="mt-4 text-sm font-bold text-accent underline-offset-4 hover:underline dark:text-accent-dark"
+                  >
+                    Play
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+
+    <p class="mt-10 text-sm text-stone-500 dark:text-stone-400">
+      You&apos;ve spent <span
+        id="seconds-on-site"
+        class="font-bold text-accent tabular-nums dark:text-accent-dark">…</span
+      > seconds on this site so far.
+    </p>
+  </main>
+
+  <style is:global>
+    .tg-area {
+      position: relative;
+      touch-action: manipulation;
+    }
+    .tg-trash {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      padding: 0.35rem;
+      line-height: 1;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      transition:
+        transform 0.15s ease,
+        opacity 0.2s ease;
+    }
+    .tg-trash:hover {
+      transform: translate(-50%, -50%) scale(1.18) rotate(-6deg);
+    }
+    .tg-trash:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      border-radius: 0.375rem;
+    }
+    .tg-trash--gone {
+      opacity: 0;
+      transform: translate(-50%, -150%) scale(0.4) rotate(20deg);
+      pointer-events: none;
+    }
+    .tg-plant {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      font-size: 2rem;
+      line-height: 1;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+      will-change: transform;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tg-trash,
+      .tg-plant {
+        transition: none;
+      }
+    }
+  </style>
+
+  <script is:inline>
+    (function () {
+      const el = document.getElementById("seconds-on-site");
+      if (!el) return;
+      const KEY = "fh:seconds-on-site";
+      const fmt = new Intl.NumberFormat();
+      function read() {
+        const v = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        return Number.isNaN(v) ? 0 : v;
+      }
+      el.textContent = fmt.format(read());
+      document.addEventListener("fh:seconds", function (event) {
+        el.textContent = fmt.format(event.detail);
+      });
+    })();
+  </script>
+
+  <script is:inline>
+    (function () {
+      const area = document.getElementById("tg-area");
+      const plant = document.getElementById("tg-broccoli-plant");
+      if (!area || !plant) return;
+
+      const TRASH = ["🥤", "🥫", "📦", "🗞️", "📰", "🧻", "🛍️", "🚬", "🍾", "🧴"];
+      const ON_SCREEN = 8;
+      const GROWTH_DIVISOR = 8; // larger = slower overall
+      const GROWTH_POWER = 2.4; // higher = flatter (slower) at the start
+
+      let cleaned = 0;
+
+      function rand(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function spawnTrash() {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tg-trash";
+        btn.setAttribute("aria-label", "Pick up");
+        btn.textContent = TRASH[(Math.random() * TRASH.length) | 0];
+        btn.style.left = rand(6, 94) + "%";
+        btn.style.top = rand(10, 86) + "%";
+        btn.style.fontSize = rand(1.4, 2.2) + "rem";
+        btn.addEventListener("click", function () {
+          clean(btn);
+        });
+        area.appendChild(btn);
+      }
+
+      function clean(btn) {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.classList.add("tg-trash--gone");
+        window.setTimeout(function () {
+          btn.remove();
+        }, 200);
+
+        cleaned += 1;
+        grow();
+        spawnTrash(); // keep the area full, endlessly
+      }
+
+      // Invisible at first, barely moves for the first several picks, then
+      // grows without bound from the center so it never drifts off-screen.
+      function grow() {
+        const scale = Math.pow(cleaned / GROWTH_DIVISOR, GROWTH_POWER);
+        plant.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+      }
+
+      grow();
+      for (let i = 0; i < ON_SCREEN; i++) spawnTrash();
+    })();
+  </script>
+</BaseLayout>

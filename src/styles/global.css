@@ -5,4 +5,60 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Brand accents. Blue leads in light mode; warm red leads in dark mode.
+     The light-mode blue is tuned for AA contrast on the stone-50/100 surfaces. */
+  --color-accent: #2d5db0;
+  --color-accent-dark: #e05243;
+
+  /* Gentle entrance used on the hero and cards. */
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* On-brand text selection. */
+::selection {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+.dark ::selection {
+  background-color: var(--color-accent-dark);
+  color: #fff;
+}
+
+/* Ease colors only during a theme switch (class is added/removed by the toggle),
+   so there's no transition flash on first paint and no interference with hovers. */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      fill 0.3s ease !important;
+  }
+}
+
+/* Respect users who prefer less motion: drop animations and transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
