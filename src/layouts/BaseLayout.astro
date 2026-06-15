@@ -98,6 +98,12 @@ const personSchema = {
         root.classList.remove("dark");
       }
     </script>
+
+    <!-- Vercel Web Analytics (equivalent to the <Analytics /> component). -->
+    <script>
+      import { inject } from "@vercel/analytics";
+      inject();
+    </script>
   </head>
   <body
     class="flex min-h-screen min-w-full flex-col items-center bg-stone-200 p-3 text-stone-700 sm:p-6 sm:pb-3 dark:bg-stone-950 dark:text-stone-200"
