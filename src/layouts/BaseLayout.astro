@@ -1,5 +1,4 @@
 ---
-// import Sidebar from "../components/Sidebar/Sidebar.astro";
 import Header from "../components/Header.astro";
 import Link from "../components/Link.astro";
 import "../styles/global.css";
@@ -46,6 +45,12 @@ const personSchema = {
     <meta
       name="keywords"
       content="HTML, CSS, JavaScript, TypeScript, software engineer, full-stack, React, Astro, Tailwind CSS, accessibility, portfolio"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=optional"
     />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -102,10 +107,6 @@ const personSchema = {
     >
       <Header />
 
-      <!-- <div class="w-2/12">
-       <Sidebar />
-      </div> -->
-
       <div class="w-full max-w-6xl px-5 sm:px-10">
         <slot />
       </div>
@@ -114,12 +115,143 @@ const personSchema = {
       <p
         class="text-center text-xs text-stone-600 sm:text-sm dark:text-stone-400"
       >
-        Designed and coded by me. Built with
+        Designed and built by Fue Her. Made with
         <Link href="https://astro.build/" target="_blank">Astro</Link> and
         <Link href="https://tailwindcss.com/" target="_blank">Tailwind CSS</Link
-        >, deployed with
+        >, deployed on
         <Link href="https://vercel.com" target="_blank">Vercel</Link>.
       </p>
     </footer>
+
+    <!-- Tracks total time on the site, persisted in localStorage. -->
+    <script is:inline>
+      (function () {
+        const KEY = "fh:seconds-on-site";
+        let seconds = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        if (Number.isNaN(seconds)) seconds = 0;
+        let timer = null;
+
+        function persist() {
+          window.localStorage.setItem(KEY, String(seconds));
+        }
+        function tick() {
+          seconds += 1;
+          persist();
+          document.dispatchEvent(
+            new CustomEvent("fh:seconds", { detail: seconds }),
+          );
+        }
+        function start() {
+          if (timer === null && document.visibilityState === "visible") {
+            timer = window.setInterval(tick, 1000);
+          }
+        }
+        function stop() {
+          if (timer !== null) {
+            window.clearInterval(timer);
+            timer = null;
+          }
+        }
+
+        document.addEventListener("visibilitychange", function () {
+          if (document.visibilityState === "visible") start();
+          else stop();
+        });
+        window.addEventListener("pagehide", persist);
+        window.__secondsOnSite = function () {
+          return seconds;
+        };
+        start();
+      })();
+    </script>
+
+    <!-- A hello for the curious devs who open the console. -->
+    <script is:inline>
+      console.log(
+        "%c👋 Hey, curious explorer!%c\nHave fun poking around.\nHere's my secret playground for games and experiments:\n\n" +
+          location.origin +
+          "/playground\n\nPsst, you can also try the Konami code.\n\n↑ ↑ ↓ ↓ ← → ← → B A",
+        "font-size:15px;font-weight:700;color:#2d5db0",
+        "font-size:12px;line-height:1.5;color:inherit",
+      );
+    </script>
+
+    <!-- Konami code → a quick confetti burst. -->
+    <script>
+      const sequence = [
+        "ArrowUp",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowRight",
+        "b",
+        "a",
+      ];
+      let position = 0;
+
+      function launchConfetti() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          return;
+
+        const canvas = document.createElement("canvas");
+        canvas.style.cssText =
+          "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999";
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+
+        const colors = ["#2d5db0", "#e05243", "#f4b400", "#0f9d58", "#ffffff"];
+        const pieces = Array.from({ length: 150 }, () => ({
+          x: Math.random() * canvas.width,
+          y: -canvas.height * 0.3 * Math.random() - 20,
+          size: (6 + Math.random() * 6) * dpr,
+          color: colors[(Math.random() * colors.length) | 0],
+          vx: (Math.random() - 0.5) * 3 * dpr,
+          vy: (2 + Math.random() * 4) * dpr,
+          rot: Math.random() * Math.PI,
+          vr: (Math.random() - 0.5) * 0.3,
+        }));
+
+        const start = performance.now();
+        function frame(now) {
+          const elapsed = now - start;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (const p of pieces) {
+            p.vy += 0.05 * dpr;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+          }
+          if (elapsed < 2800) requestAnimationFrame(frame);
+          else canvas.remove();
+        }
+        requestAnimationFrame(frame);
+      }
+
+      window.addEventListener("keydown", (event) => {
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (key === sequence[position]) {
+          position += 1;
+          if (position === sequence.length) {
+            position = 0;
+            launchConfetti();
+          }
+        } else {
+          position = key === sequence[0] ? 1 : 0;
+        }
+      });
+    </script>
   </body>
 </html>

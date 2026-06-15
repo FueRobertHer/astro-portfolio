@@ -2,20 +2,20 @@ import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const ThemeToggleButton = () => {
-  const [theme, setTheme] = useState(() => {
-    if (import.meta.env.SSR) return "";
-    return document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light";
-  });
+  // Render a stable default on the server and the first client render so
+  // hydration matches; resolve the real theme only after mount.
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (document.documentElement.classList.contains("dark")) {
-      setTheme("dark");
-    }
-  }, [setTheme]);
+    setTheme(
+      document.documentElement.classList.contains("dark") ? "dark" : "light",
+    );
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     const root = document.documentElement;
     if (theme === "light") {
       root.classList.remove("dark");
@@ -23,20 +23,25 @@ const ThemeToggleButton = () => {
       root.classList.add("dark");
     }
     localStorage.setItem("theme", theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const nextTheme = theme === "dark" ? "light" : "dark";
   const label = `Switch to ${nextTheme} theme`;
 
   return (
-    <div className="flex w-fit justify-between rounded-full border-2 border-current hover:border-[#366CC6] dark:hover:border-[#E05243]">
+    <div className="flex w-fit justify-between rounded-full border-2 border-current hover:border-accent dark:hover:border-accent-dark">
       <button
-        className="group flex w-fit justify-between *:transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#366CC6] dark:focus-visible:outline-[#E05243]"
+        className="group flex w-fit justify-between *:transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent dark:focus-visible:outline-accent-dark"
         title={label}
         aria-label={label}
         aria-pressed={theme === "dark"}
         aria-live="polite"
         onClick={() => {
+          // Briefly ease theme colors instead of snapping (see global.css).
+          const root = document.documentElement;
+          root.classList.add("theme-transition");
+          window.setTimeout(() => root.classList.remove("theme-transition"), 350);
+
           const matchesDarkTheme = window.matchMedia(
             "(prefers-color-scheme: dark)"
           ).matches;
@@ -56,12 +61,12 @@ const ThemeToggleButton = () => {
         }}
       >
         <Sun
-          className="m-1 text-[#C63D32] dark:text-current dark:group-hover:rotate-[24deg]"
+          className="m-1 text-accent-dark dark:text-current dark:group-hover:rotate-[24deg]"
           aria-hidden="true"
           size={20}
         />
         <Moon
-          className="m-1 text-current group-hover:rotate-[24deg] dark:text-[#366CC6] dark:group-hover:rotate-0"
+          className="m-1 text-current group-hover:rotate-[24deg] dark:text-accent dark:group-hover:rotate-0"
           aria-hidden="true"
           size={20}
         />
