@@ -8,7 +8,11 @@ export default defineConfig({
   site: "https://fueher.com",
   integrations: [react()],
   output: "server",
-  adapter: vercel(),
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+  }),
   vite: {
     plugins: [tailwindcss()],
   },
