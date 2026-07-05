@@ -142,7 +142,10 @@ const personSchema = {
         }
         function tick() {
           seconds += 1;
-          persist();
+          // Persist occasionally rather than every second — pagehide and
+          // visibilitychange below catch the rest, and once-a-second
+          // localStorage writes cost battery on mobile.
+          if (seconds % 15 === 0) persist();
           document.dispatchEvent(
             new CustomEvent("fh:seconds", { detail: seconds }),
           );
@@ -160,8 +163,12 @@ const personSchema = {
         }
 
         document.addEventListener("visibilitychange", function () {
-          if (document.visibilityState === "visible") start();
-          else stop();
+          if (document.visibilityState === "visible") {
+            start();
+          } else {
+            stop();
+            persist();
+          }
         });
         window.addEventListener("pagehide", persist);
         window.__secondsOnSite = function () {
