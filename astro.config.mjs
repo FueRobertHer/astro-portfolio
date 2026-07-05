@@ -7,12 +7,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://fueher.com",
   integrations: [react()],
-  output: "server",
-  adapter: vercel({
-    webAnalytics: {
-      enabled: true,
-    },
-  }),
+  // Static output: every page is prerendered and served from Vercel's CDN
+  // instead of hitting a serverless function on each request. Analytics is
+  // injected client-side in BaseLayout, so the adapter option isn't needed
+  // (having both double-loads the script).
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },

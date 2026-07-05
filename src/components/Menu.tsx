@@ -13,7 +13,7 @@ const Menu = (props: PropsWithChildren) => {
         }}
         title="Open navigation menu"
         aria-label="Open navigation menu"
-        className="inline-flex size-10 items-center justify-center rounded-md border border-stone-300 text-stone-800 transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent dark:border-stone-700 dark:text-stone-200 dark:hover:border-accent-dark dark:hover:text-accent-dark dark:focus-visible:outline-accent-dark"
+        className="inline-flex size-11 items-center justify-center rounded-md border border-stone-300 text-stone-800 transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent dark:border-stone-700 dark:text-stone-200 dark:hover:border-accent-dark dark:hover:text-accent-dark dark:focus-visible:outline-accent-dark"
       >
         <MenuIcon aria-hidden="true" size={22} strokeWidth={2.25} />
       </button>
@@ -41,7 +41,7 @@ const Menu = (props: PropsWithChildren) => {
               }}
               title="Close menu"
               aria-label="Close menu"
-              className="absolute right-2 top-2 flex size-9 items-center justify-center rounded-md text-stone-700 transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:text-stone-200 dark:hover:text-accent-dark dark:focus-visible:outline-accent-dark"
+              className="absolute right-2 top-2 flex size-11 items-center justify-center rounded-md text-stone-700 transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:text-stone-200 dark:hover:text-accent-dark dark:focus-visible:outline-accent-dark"
             >
               <X aria-hidden="true" size={20} strokeWidth={2.25} />
             </button>
