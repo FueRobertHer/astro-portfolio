@@ -283,7 +283,16 @@ const personSchema = {
         "left",
         "right",
       ];
+      // A deliberate drag needs real travel distance. A flick is the
+      // opposite: short travel, high speed, and it's common for a fast
+      // flick to fire only touchstart + touchend with no touchmove events
+      // at all (or so few that none individually cross a distance-only
+      // threshold) before the browser hands it off as a fling. So a
+      // shorter, faster stroke counts too, judged by speed instead of
+      // distance.
       const MIN_SWIPE_DISTANCE = 24;
+      const MIN_FLICK_DISTANCE = 10;
+      const MIN_FLICK_VELOCITY = 0.5; // px/ms, roughly 500px/s
       // How much one axis must lead the other before we commit to a
       // direction. Below this, a near-45° stroke is ambiguous and we wait
       // for more movement instead of guessing (and possibly guessing wrong).
@@ -292,14 +301,30 @@ const personSchema = {
       let activeTouchId: number | null = null;
       let segmentStartX = 0;
       let segmentStartY = 0;
+      let segmentStartTime = 0;
 
-      function swipeDirection(dx: number, dy: number): SwipeDirection | null {
+      function resolveAxis(dx: number, dy: number): SwipeDirection | null {
         const absX = Math.abs(dx);
         const absY = Math.abs(dy);
-        if (Math.max(absX, absY) < MIN_SWIPE_DISTANCE) return null;
         if (absX > absY * AXIS_DOMINANCE) return dx > 0 ? "right" : "left";
         if (absY > absX * AXIS_DOMINANCE) return dy > 0 ? "down" : "up";
         return null;
+      }
+
+      function swipeDirection(
+        dx: number,
+        dy: number,
+        elapsedMs: number,
+      ): SwipeDirection | null {
+        const distance = Math.max(Math.abs(dx), Math.abs(dy));
+        if (distance < MIN_FLICK_DISTANCE) return null;
+
+        const isDrag = distance >= MIN_SWIPE_DISTANCE;
+        const velocity = elapsedMs > 0 ? distance / elapsedMs : Infinity;
+        const isFlick = velocity >= MIN_FLICK_VELOCITY;
+        if (!isDrag && !isFlick) return null;
+
+        return resolveAxis(dx, dy);
       }
 
       function findActiveTouch(touches: TouchList): Touch | null {
@@ -321,14 +346,19 @@ const personSchema = {
         }
       }
 
+      function startSegment(x: number, y: number) {
+        segmentStartX = x;
+        segmentStartY = y;
+        segmentStartTime = performance.now();
+      }
+
       window.addEventListener(
         "touchstart",
         (event) => {
           const touch = event.changedTouches[0];
           if (!touch) return;
           activeTouchId = touch.identifier;
-          segmentStartX = touch.clientX;
-          segmentStartY = touch.clientY;
+          startSegment(touch.clientX, touch.clientY);
         },
         { passive: true },
       );
@@ -350,22 +380,35 @@ const personSchema = {
           const direction = swipeDirection(
             touch.clientX - segmentStartX,
             touch.clientY - segmentStartY,
+            performance.now() - segmentStartTime,
           );
           if (!direction) return;
 
           registerSwipe(direction);
-          segmentStartX = touch.clientX;
-          segmentStartY = touch.clientY;
+          startSegment(touch.clientX, touch.clientY);
         },
         { passive: true },
       );
 
-      function resetSwipeTracking() {
+      // A quick flick can end (touchend/touchcancel) before any touchmove
+      // crosses the threshold, or with no touchmove firing at all — so
+      // re-check the final position against the segment start here too.
+      function handleTouchEnd(event: TouchEvent) {
+        if (activeTouchId === null) return;
+        const touch = findActiveTouch(event.changedTouches);
+        if (touch) {
+          const direction = swipeDirection(
+            touch.clientX - segmentStartX,
+            touch.clientY - segmentStartY,
+            performance.now() - segmentStartTime,
+          );
+          if (direction) registerSwipe(direction);
+        }
         activeTouchId = null;
       }
 
-      window.addEventListener("touchend", resetSwipeTracking, { passive: true });
-      window.addEventListener("touchcancel", resetSwipeTracking, {
+      window.addEventListener("touchend", handleTouchEnd, { passive: true });
+      window.addEventListener("touchcancel", handleTouchEnd, {
         passive: true,
       });
     </script>
