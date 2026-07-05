@@ -285,8 +285,10 @@ const personSchema = {
       ];
       const MIN_SWIPE_DISTANCE = 30;
       let swipePosition = 0;
+      let activeTouchId: number | null = null;
       let touchStartX = 0;
       let touchStartY = 0;
+      let swipeConsumed = false;
 
       function swipeDirection(dx: number, dy: number): SwipeDirection | null {
         const absX = Math.abs(dx);
@@ -295,27 +297,48 @@ const personSchema = {
         return absX > absY ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up";
       }
 
+      function findActiveTouch(touches: TouchList): Touch | null {
+        for (let i = 0; i < touches.length; i++) {
+          if (touches[i].identifier === activeTouchId) return touches[i];
+        }
+        return null;
+      }
+
+      function resetSwipeTracking() {
+        activeTouchId = null;
+        swipeConsumed = false;
+      }
+
       window.addEventListener(
         "touchstart",
         (event) => {
           const touch = event.changedTouches[0];
           if (!touch) return;
+          activeTouchId = touch.identifier;
           touchStartX = touch.clientX;
           touchStartY = touch.clientY;
+          swipeConsumed = false;
         },
         { passive: true },
       );
 
+      // Detect direction on touchmove rather than waiting for touchend: a
+      // fast fling is often handed off to native scrolling mid-gesture,
+      // which fires touchcancel instead of touchend and would otherwise
+      // drop the swipe entirely.
       window.addEventListener(
-        "touchend",
+        "touchmove",
         (event) => {
-          const touch = event.changedTouches[0];
+          if (activeTouchId === null || swipeConsumed) return;
+          const touch = findActiveTouch(event.changedTouches);
           if (!touch) return;
+
           const direction = swipeDirection(
             touch.clientX - touchStartX,
             touch.clientY - touchStartY,
           );
           if (!direction) return;
+          swipeConsumed = true;
 
           if (direction === swipeSequence[swipePosition]) {
             swipePosition += 1;
@@ -329,6 +352,11 @@ const personSchema = {
         },
         { passive: true },
       );
+
+      window.addEventListener("touchend", resetSwipeTracking, { passive: true });
+      window.addEventListener("touchcancel", resetSwipeTracking, {
+        passive: true,
+      });
     </script>
   </body>
 </html>
