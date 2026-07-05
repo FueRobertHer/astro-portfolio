@@ -283,18 +283,23 @@ const personSchema = {
         "left",
         "right",
       ];
-      const MIN_SWIPE_DISTANCE = 30;
+      const MIN_SWIPE_DISTANCE = 24;
+      // How much one axis must lead the other before we commit to a
+      // direction. Below this, a near-45° stroke is ambiguous and we wait
+      // for more movement instead of guessing (and possibly guessing wrong).
+      const AXIS_DOMINANCE = 1.2;
       let swipePosition = 0;
       let activeTouchId: number | null = null;
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let swipeConsumed = false;
+      let segmentStartX = 0;
+      let segmentStartY = 0;
 
       function swipeDirection(dx: number, dy: number): SwipeDirection | null {
         const absX = Math.abs(dx);
         const absY = Math.abs(dy);
         if (Math.max(absX, absY) < MIN_SWIPE_DISTANCE) return null;
-        return absX > absY ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up";
+        if (absX > absY * AXIS_DOMINANCE) return dx > 0 ? "right" : "left";
+        if (absY > absX * AXIS_DOMINANCE) return dy > 0 ? "down" : "up";
+        return null;
       }
 
       function findActiveTouch(touches: TouchList): Touch | null {
@@ -304,9 +309,16 @@ const personSchema = {
         return null;
       }
 
-      function resetSwipeTracking() {
-        activeTouchId = null;
-        swipeConsumed = false;
+      function registerSwipe(direction: SwipeDirection) {
+        if (direction === swipeSequence[swipePosition]) {
+          swipePosition += 1;
+          if (swipePosition === swipeSequence.length) {
+            swipePosition = 0;
+            launchConfetti();
+          }
+        } else {
+          swipePosition = direction === swipeSequence[0] ? 1 : 0;
+        }
       }
 
       window.addEventListener(
@@ -315,9 +327,8 @@ const personSchema = {
           const touch = event.changedTouches[0];
           if (!touch) return;
           activeTouchId = touch.identifier;
-          touchStartX = touch.clientX;
-          touchStartY = touch.clientY;
-          swipeConsumed = false;
+          segmentStartX = touch.clientX;
+          segmentStartY = touch.clientY;
         },
         { passive: true },
       );
@@ -325,33 +336,33 @@ const personSchema = {
       // Detect direction on touchmove rather than waiting for touchend: a
       // fast fling is often handed off to native scrolling mid-gesture,
       // which fires touchcancel instead of touchend and would otherwise
-      // drop the swipe entirely.
+      // drop the swipe entirely. Once a segment resolves to a direction, the
+      // start point resets to the current position so one continuous drag
+      // (e.g. a zigzag without lifting the finger) can register the whole
+      // multi-swipe sequence, not just its first stroke.
       window.addEventListener(
         "touchmove",
         (event) => {
-          if (activeTouchId === null || swipeConsumed) return;
+          if (activeTouchId === null) return;
           const touch = findActiveTouch(event.changedTouches);
           if (!touch) return;
 
           const direction = swipeDirection(
-            touch.clientX - touchStartX,
-            touch.clientY - touchStartY,
+            touch.clientX - segmentStartX,
+            touch.clientY - segmentStartY,
           );
           if (!direction) return;
-          swipeConsumed = true;
 
-          if (direction === swipeSequence[swipePosition]) {
-            swipePosition += 1;
-            if (swipePosition === swipeSequence.length) {
-              swipePosition = 0;
-              launchConfetti();
-            }
-          } else {
-            swipePosition = direction === swipeSequence[0] ? 1 : 0;
-          }
+          registerSwipe(direction);
+          segmentStartX = touch.clientX;
+          segmentStartY = touch.clientY;
         },
         { passive: true },
       );
+
+      function resetSwipeTracking() {
+        activeTouchId = null;
+      }
 
       window.addEventListener("touchend", resetSwipeTracking, { passive: true });
       window.addEventListener("touchcancel", resetSwipeTracking, {
