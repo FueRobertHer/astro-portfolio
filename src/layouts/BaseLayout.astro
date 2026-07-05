@@ -183,7 +183,7 @@ const personSchema = {
       console.log(
         "%c👋 Hey, curious explorer!%c\nHave fun poking around.\nHere's my secret playground for games and experiments:\n\n" +
           location.origin +
-          "/playground\n\nPsst, you can also try the Konami code.\n\n↑ ↑ ↓ ↓ ← → ← → B A",
+          "/playground\n\nPsst, you can also try the Konami code (keyboard) or swipe it (touch).\n\n↑ ↑ ↓ ↓ ← → ← → B A",
         "font-size:15px;font-weight:700;color:#2d5db0",
         "font-size:12px;line-height:1.5;color:inherit",
       );
@@ -270,6 +270,65 @@ const personSchema = {
           position = key === sequence[0] ? 1 : 0;
         }
       });
+
+      // Touch analog of the Konami code: the same arrow pattern, swiped.
+      type SwipeDirection = "up" | "down" | "left" | "right";
+      const swipeSequence: SwipeDirection[] = [
+        "up",
+        "up",
+        "down",
+        "down",
+        "left",
+        "right",
+        "left",
+        "right",
+      ];
+      const MIN_SWIPE_DISTANCE = 30;
+      let swipePosition = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      function swipeDirection(dx: number, dy: number): SwipeDirection | null {
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        if (Math.max(absX, absY) < MIN_SWIPE_DISTANCE) return null;
+        return absX > absY ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up";
+      }
+
+      window.addEventListener(
+        "touchstart",
+        (event) => {
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+        },
+        { passive: true },
+      );
+
+      window.addEventListener(
+        "touchend",
+        (event) => {
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          const direction = swipeDirection(
+            touch.clientX - touchStartX,
+            touch.clientY - touchStartY,
+          );
+          if (!direction) return;
+
+          if (direction === swipeSequence[swipePosition]) {
+            swipePosition += 1;
+            if (swipePosition === swipeSequence.length) {
+              swipePosition = 0;
+              launchConfetti();
+            }
+          } else {
+            swipePosition = direction === swipeSequence[0] ? 1 : 0;
+          }
+        },
+        { passive: true },
+      );
     </script>
   </body>
 </html>
