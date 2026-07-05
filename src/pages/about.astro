@@ -69,7 +69,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           </div>
         </article>
 
-        <article class="group relative overflow-hidden pb-20">
+        <article class="group">
           <h2 class="text-2xl font-black text-stone-950 dark:text-stone-50">
             Outside Code
           </h2>
@@ -97,7 +97,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             loading="lazy"
             decoding="async"
             aria-hidden="true"
-            class="pointer-events-none absolute bottom-1 right-1 w-20 transition-all duration-700 ease-out sm:translate-y-8 sm:opacity-0 sm:group-has-[a:hover]:translate-y-0 sm:group-has-[a:hover]:opacity-100 sm:group-has-[a:focus-visible]:translate-y-0 sm:group-has-[a:focus-visible]:opacity-100"
+            class="pointer-events-none fixed bottom-1 right-1 z-10 w-20 translate-y-8 opacity-0 transition-all duration-700 ease-out group-has-[a:hover]:translate-y-0 group-has-[a:hover]:opacity-100 group-has-[a:focus-visible]:translate-y-0 group-has-[a:focus-visible]:opacity-100"
           />
         </article>
       </section>

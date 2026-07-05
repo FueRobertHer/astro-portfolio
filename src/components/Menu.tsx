@@ -30,7 +30,7 @@ const Menu = (props: PropsWithChildren) => {
               dialog.close();
             }
           }}
-          className="relative mt-8 w-10/12 rounded-md border border-stone-300 bg-stone-50 text-stone-700 backdrop:bg-black backdrop:opacity-20 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-200 dark:backdrop:opacity-50"
+          className="relative mx-auto mt-8 w-10/12 rounded-md border border-stone-300 bg-stone-50 text-stone-700 backdrop:bg-black backdrop:opacity-20 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-200 dark:backdrop:opacity-50"
         >
           <div className="px-8 py-12">
             <button
