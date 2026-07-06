@@ -302,6 +302,14 @@ const personSchema = {
       let segmentStartX = 0;
       let segmentStartY = 0;
       let segmentStartTime = 0;
+      // The sequence needs the same direction twice in a row (up, up /
+      // down, down). A single continuous stroke in one direction gets
+      // sampled into an unpredictable number of touchmove chunks, so
+      // without this it registers as many repeats as happened to be
+      // sampled and the position bounces around at random. Only count a
+      // direction again once the finger has actually moved a different
+      // way in between — a real repeat means lifting and swiping again.
+      let lastRegisteredDirection: SwipeDirection | null = null;
 
       function resolveAxis(dx: number, dy: number): SwipeDirection | null {
         const absX = Math.abs(dx);
@@ -358,6 +366,7 @@ const personSchema = {
           const touch = event.changedTouches[0];
           if (!touch) return;
           activeTouchId = touch.identifier;
+          lastRegisteredDirection = null;
           startSegment(touch.clientX, touch.clientY);
         },
         { passive: true },
@@ -384,8 +393,10 @@ const personSchema = {
           );
           if (!direction) return;
 
-          registerSwipe(direction);
           startSegment(touch.clientX, touch.clientY);
+          if (direction === lastRegisteredDirection) return;
+          lastRegisteredDirection = direction;
+          registerSwipe(direction);
         },
         { passive: true },
       );
@@ -402,7 +413,9 @@ const personSchema = {
             touch.clientY - segmentStartY,
             performance.now() - segmentStartTime,
           );
-          if (direction) registerSwipe(direction);
+          if (direction && direction !== lastRegisteredDirection) {
+            registerSwipe(direction);
+          }
         }
         activeTouchId = null;
       }
