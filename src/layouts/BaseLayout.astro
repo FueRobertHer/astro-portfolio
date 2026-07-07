@@ -100,9 +100,12 @@ const personSchema = {
     </script>
 
     <!-- Vercel Web Analytics (equivalent to the <Analytics /> component). -->
+    <!-- PROD-gated: the analytics endpoint 404s outside real Vercel deploys. -->
     <script>
       import { inject } from "@vercel/analytics";
-      inject();
+      if (import.meta.env.PROD) {
+        inject();
+      }
     </script>
   </head>
   <body
