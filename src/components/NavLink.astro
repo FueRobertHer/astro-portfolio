@@ -5,8 +5,12 @@ export interface Props {
 
 const { href } = Astro.props;
 
-const path = Astro.url.pathname;
-const isActive = path === href
+// Pages build to /about/index.html, so the runtime pathname carries a
+// trailing slash the hrefs above don't. Compare them normalized, or the
+// active-page indicator never lights up anywhere but the home page.
+const normalize = (value: string) =>
+  value.length > 1 && value.endsWith("/") ? value.slice(0, -1) : value;
+const isActive = normalize(Astro.url.pathname) === normalize(href);
 ---
 
 <a
