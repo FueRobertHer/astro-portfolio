@@ -156,25 +156,6 @@ export const projects: Project[] = [
     ],
   },
   {
-    title: "Nspect",
-    eyebrow: "Single-page app",
-    summary:
-      "A single-page iNaturalist-inspired app for exploring nature observations and discovery workflows.",
-    role: "Built the application UI and interaction model.",
-    stack: ["JavaScript", "Single-page app", "API integration"],
-    highlights: [
-      "Translated a real product pattern into a focused clone.",
-      "Practiced data-driven UI flows and browsing states.",
-      "Balanced visual browsing with practical interaction details.",
-    ],
-    links: [
-      {
-        label: "View code",
-        href: "https://github.com/FueRobertHer/Nspect",
-      },
-    ],
-  },
-  {
     title: "Jumpy Kart",
     eyebrow: "Game project",
     summary:
