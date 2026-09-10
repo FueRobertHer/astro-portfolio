@@ -112,8 +112,8 @@ export const projects: Project[] = [
     title: "TabbyNotes",
     eyebrow: "Browser extension",
     summary:
-      "A published tabbed Markdown notebook for Chrome and Firefox, with a live preview editor and zero network requests.",
-    role: "Built and published the extension across both browser stores.",
+      "A tabbed Markdown notebook extension for Chrome and Firefox, with a live preview editor and zero network requests.",
+    role: "Built the extension and published it to Firefox Add-ons.",
     stack: ["TypeScript", "React", "WXT", "CodeMirror", "Tailwind CSS", "Bun"],
     highlights: [
       "Built a live preview editor on CodeMirror 6 and React 19.",
