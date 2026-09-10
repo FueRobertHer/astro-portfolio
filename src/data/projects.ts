@@ -155,25 +155,6 @@ export const projects: Project[] = [
       },
     ],
   },
-  {
-    title: "Jumpy Kart",
-    eyebrow: "Game project",
-    summary:
-      "A Mario-themed take on a Flappy Bird-style platformer, built as a playful JavaScript game project.",
-    role: "Built the game loop, controls, and browser experience.",
-    stack: ["JavaScript", "Game UI", "Browser APIs"],
-    highlights: [
-      "Implemented a simple arcade interaction loop.",
-      "Worked through timing, collision, and restart states.",
-      "Used a familiar game pattern to practice responsive feedback.",
-    ],
-    links: [
-      {
-        label: "View code",
-        href: "https://github.com/FueRobertHer/jumpy_kart",
-      },
-    ],
-  },
 ];
 
 export const featuredProjects = projects.filter((project) => project.featured);
