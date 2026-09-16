@@ -2,8 +2,10 @@
   "name": "fueher-portfolio-astro",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "bun@1.4.2",
   "engines": {
-    "node": "22.x"
+    "node": "22.x",
+    "bun": ">=1.4.2"
   },
   "scripts": {
     "dev": "astro dev",
