@@ -46,7 +46,7 @@ const Heading = ({ 2: "h2", 3: "h3" } as const)[headingLevel];
 
   <ul class="mt-5 flex flex-wrap gap-2" aria-label={`${project.title} stack`}>
     {project.stack.map((item) => (
-      <li class="rounded-md border border-stone-300 px-2.5 py-1 text-xs font-bold text-stone-700 dark:border-stone-700 dark:text-stone-200">
+      <li class="rounded-md border border-stone-300/80 bg-stone-200/60 px-2.5 py-1 text-xs font-bold text-stone-800 dark:border-stone-700/80 dark:bg-stone-800/60 dark:text-stone-200">
         {item}
       </li>
     ))}
