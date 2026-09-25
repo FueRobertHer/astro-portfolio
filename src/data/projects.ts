@@ -111,7 +111,6 @@ export const projects: Project[] = [
         href: "https://cast-guidance.vercel.app",
       },
     ],
-    featured: true,
   },
   {
     title: "TabbyNotes",
