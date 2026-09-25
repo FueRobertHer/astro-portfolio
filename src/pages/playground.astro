@@ -29,8 +29,8 @@ const games: Game[] = [];
       </h1>
       <p class="mt-5 text-lg leading-8 text-stone-600 dark:text-stone-300">
         A hidden corner for the games and little experiments I build for fun.
-        Nothing here is polished, that&apos;s the point. Check back as new things
-        appear.
+        Nothing here is polished, that&apos;s the point. Check back as new
+        things appear.
       </p>
     </section>
 
@@ -40,7 +40,9 @@ const games: Game[] = [];
         class="tg-area h-72 w-full overflow-hidden rounded-md border border-dashed border-stone-300 bg-gradient-to-b from-emerald-50 to-stone-100 sm:h-80 dark:border-stone-700 dark:from-stone-900 dark:to-stone-950"
         aria-label="Interactive area"
       >
-        <span id="tg-broccoli-plant" class="tg-plant" aria-hidden="true">🥦</span>
+        <span id="tg-broccoli-plant" class="tg-plant" aria-hidden="true"
+          >🥦</span
+        >
       </div>
 
       {
@@ -157,7 +159,18 @@ const games: Game[] = [];
       const plant = document.getElementById("tg-broccoli-plant");
       if (!area || !plant) return;
 
-      const TRASH = ["🥤", "🥫", "📦", "🗞️", "📰", "🧻", "🛍️", "🚬", "🍾", "🧴"];
+      const TRASH = [
+        "🥤",
+        "🥫",
+        "📦",
+        "🗞️",
+        "📰",
+        "🧻",
+        "🛍️",
+        "🚬",
+        "🍾",
+        "🧴",
+      ];
       const ON_SCREEN = 8;
       const GROWTH_DIVISOR = 8; // larger = slower overall
       const GROWTH_POWER = 2.4; // higher = flatter (slower) at the start

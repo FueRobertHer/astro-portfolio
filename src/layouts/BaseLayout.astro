@@ -326,7 +326,8 @@ const personSchema = {
       }
 
       window.addEventListener("keydown", (event) => {
-        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        const key =
+          event.key.length === 1 ? event.key.toLowerCase() : event.key;
         if (key === sequence[position]) {
           position += 1;
           if (position === sequence.length) {

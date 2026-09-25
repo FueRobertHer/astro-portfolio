@@ -15,7 +15,8 @@ const {
 } = Astro.props;
 
 const isExternal = href.startsWith("http");
-const rel = target === "_blank" || isExternal ? "noopener noreferrer" : undefined;
+const rel =
+  target === "_blank" || isExternal ? "noopener noreferrer" : undefined;
 
 const variants = {
   primary:
