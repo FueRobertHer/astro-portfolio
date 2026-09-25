@@ -23,7 +23,11 @@ const links = [
     links.map((link) => (
       <a
         href={link.href}
-        aria-label={link.label}
+        aria-label={
+          link.href.startsWith("http")
+            ? `${link.label} (opens in a new tab)`
+            : link.label
+        }
         title={link.label}
         rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
         target={link.href.startsWith("http") ? "_blank" : undefined}

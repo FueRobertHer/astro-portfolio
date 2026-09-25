@@ -1,21 +1,21 @@
 {
-  "name": "fueher",
-  "short_name": "fueher",
+  "name": "Fue Her",
+  "short_name": "Fue Her",
+  "description": "Portfolio of Fue Her, full stack engineer.",
+  "start_url": "/",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#e7e5e4",
+  "background_color": "#fafaf9",
   "display": "standalone"
 }

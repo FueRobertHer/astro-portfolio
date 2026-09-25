@@ -1,0 +1,102 @@
+<div
+  class="flex w-fit justify-between rounded-full border-2 border-current hover:border-accent dark:hover:border-accent-dark"
+>
+  <!-- aria-pressed starts false and is corrected by the script below; the
+       icons are styled by the dark class, so they're right from first paint. -->
+  <button
+    type="button"
+    data-theme-toggle
+    class="group flex w-fit justify-between *:transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent dark:focus-visible:outline-accent-dark"
+    title="Dark theme"
+    aria-label="Dark theme"
+    aria-pressed="false"
+  >
+    <svg
+      class="m-1 size-5 text-accent-dark dark:text-current dark:group-hover:rotate-[24deg]"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4"></circle>
+      <path
+        d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+      ></path>
+    </svg>
+    <svg
+      class="m-1 size-5 text-current group-hover:rotate-[24deg] dark:text-accent dark:group-hover:rotate-0"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path
+        d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+      ></path>
+    </svg>
+  </button>
+</div>
+
+<script>
+  type Theme = "light" | "dark";
+
+  const root = document.documentElement;
+  const buttons = document.querySelectorAll<HTMLButtonElement>(
+    "[data-theme-toggle]",
+  );
+  const readTheme = (): Theme =>
+    root.classList.contains("dark") ? "dark" : "light";
+
+  // Follow the <html> class rather than owning the theme, so the desktop and
+  // mobile-menu toggles (and system preference changes) stay in sync.
+  function syncPressed() {
+    const pressed = String(readTheme() === "dark");
+    buttons.forEach((button) => button.setAttribute("aria-pressed", pressed));
+  }
+  syncPressed();
+  new MutationObserver(syncPressed).observe(root, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+
+  buttons.forEach((button) =>
+    button.addEventListener("click", () => {
+      const next: Theme = readTheme() === "dark" ? "light" : "dark";
+      const systemTheme: Theme = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches
+        ? "dark"
+        : "light";
+
+      // Only remember an explicit choice; matching the system again means
+      // "follow the system" from here on.
+      // Storage can throw (blocked site data); switch the theme anyway.
+      try {
+        if (next === systemTheme) {
+          localStorage.removeItem("theme");
+        } else {
+          localStorage.setItem("theme", next);
+        }
+      } catch {}
+
+      // A view transition crossfades one snapshot of the whole page, so
+      // every surface changes together instead of each element easing on
+      // its own clock (which read as a flicker).
+      const apply = () => window.__applyTheme(next);
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (document.startViewTransition && !reduceMotion) {
+        document.startViewTransition(apply);
+      } else {
+        apply();
+      }
+    }),
+  );
+</script>

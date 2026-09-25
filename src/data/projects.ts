@@ -136,12 +136,12 @@ export const projects: Project[] = [
     title: "Astro Portfolio",
     eyebrow: "Personal site",
     summary:
-      "A fast, responsive portfolio built with Astro, React islands, Tailwind CSS, and Vercel previews.",
+      "A fast, responsive portfolio built with Astro, Tailwind CSS, and Vercel previews, shipping no framework JavaScript.",
     role: "Designed, built, and maintained the site end to end.",
-    stack: ["Astro", "React", "TypeScript", "Tailwind CSS", "Vercel"],
+    stack: ["Astro", "TypeScript", "Tailwind CSS", "Vercel"],
     highlights: [
-      "Migrated the stack to Astro 7, React 19, and Tailwind 4.",
-      "Kept interactive behavior scoped to small React islands.",
+      "Migrated the stack to Astro 7 and Tailwind 4.",
+      "Replaced React islands with small inline scripts, so pages ship no framework runtime.",
       "Added deployment previews through the Vercel GitHub flow.",
     ],
     links: [

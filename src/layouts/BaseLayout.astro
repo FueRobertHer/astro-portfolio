@@ -1,18 +1,32 @@
 ---
 import Header from "../components/Header.astro";
 import Link from "../components/Link.astro";
+import "@fontsource-variable/inter/wght.css";
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "../styles/global.css";
 
 export interface Props {
   title: string;
   description: string;
   image?: string;
+  imageAlt?: string;
+  // Keep a page out of search results (the hidden playground, the 404).
+  noindex?: boolean;
 }
 
-const { title, description, image = "/FH-150x150.png" } = Astro.props;
+const defaultImage = { src: "/og.png", width: 1200, height: 630 };
+const {
+  title,
+  description,
+  image = defaultImage.src,
+  imageAlt = "Fue Her, Full Stack Engineer. I build growth-focused web products at scale.",
+  noindex = false,
+} = Astro.props;
 const site = Astro.site ?? new URL("https://fueher.com");
 const canonicalURL = new URL(Astro.url.pathname, site).toString();
 const imageURL = new URL(image, site).toString();
+// Only the default image has known dimensions.
+const imageSize = image === defaultImage.src ? defaultImage : undefined;
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -37,16 +51,17 @@ const personSchema = {
 <!doctype html>
 <html lang="en" class="font-sans">
   <head>
+    <meta charset="UTF-8" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta charset="UTF-8" />
     <meta name="author" content="Fue Her" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=optional"
+      rel="preload"
+      href={interLatin}
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -65,16 +80,31 @@ const personSchema = {
       media="(prefers-color-scheme: dark)"
     />
     <meta name="generator" content={Astro.generator} />
-    <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {
+      // A noindex page has no URL worth pointing at; the 404 in particular
+      // would claim /404/, which isn't a real route.
+      !noindex && <link rel="canonical" href={canonicalURL} />
+    }
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
+    {!noindex && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={imageURL} />
-    <meta name="twitter:card" content="summary" />
+    {
+      imageSize && (
+        <>
+          <meta property="og:image:width" content={String(imageSize.width)} />
+          <meta property="og:image:height" content={String(imageSize.height)} />
+        </>
+      )
+    }
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <script
       is:inline
       type="application/ld+json"
@@ -83,16 +113,41 @@ const personSchema = {
 
     <!-- inline to prevent FOUC -->
     <script is:inline>
-      const root = document.documentElement;
-      const theme = localStorage.getItem("theme");
-      if (
-        theme === "dark" ||
-        (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
+      (function () {
+        const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+        // Storage can throw (blocked site data), which would otherwise leave
+        // the page on the wrong theme.
+        const storedTheme = function () {
+          try {
+            return localStorage.getItem("theme");
+          } catch (error) {
+            return null;
+          }
+        };
+        const preferredTheme = function () {
+          const stored = storedTheme();
+          if (stored === "dark" || stored === "light") return stored;
+          return systemDark.matches ? "dark" : "light";
+        };
+        // Also used by ThemeToggleButton. Keeps the browser UI color (mobile
+        // address bar) in step with the chosen theme, not just the OS one.
+        window.__applyTheme = function (theme) {
+          document.documentElement.classList.toggle("dark", theme === "dark");
+          const color = theme === "dark" ? "#0c0a09" : "#e7e5e4";
+          document
+            .querySelectorAll('meta[name="theme-color"]')
+            .forEach(function (meta) {
+              meta.setAttribute("content", color);
+            });
+        };
+        window.__applyTheme(preferredTheme());
+        // With no saved choice, follow the system theme live.
+        systemDark.addEventListener("change", function () {
+          if (!storedTheme()) {
+            window.__applyTheme(preferredTheme());
+          }
+        });
+      })();
     </script>
 
     <!-- Vercel Web Analytics (equivalent to the <Analytics /> component). -->
@@ -107,6 +162,12 @@ const personSchema = {
   <body
     class="flex min-h-screen min-w-full flex-col items-center bg-stone-200 p-3 text-stone-700 sm:p-6 sm:pb-3 dark:bg-stone-950 dark:text-stone-200"
   >
+    <a
+      href="#main"
+      class="sr-only rounded-md bg-accent px-4 py-2 text-sm font-bold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 dark:bg-accent-dark"
+    >
+      Skip to content
+    </a>
     <div
       class="relative flex w-full max-w-full grow flex-col items-center rounded-md border border-stone-300 bg-stone-50 shadow-[0_0_2rem_rgba(28,28,28,0.08)] sm:max-w-screen-2xl dark:border-stone-800 dark:bg-stone-950 dark:shadow-[0_0_2rem_rgba(0,0,0,0.28)]"
     >
@@ -132,12 +193,17 @@ const personSchema = {
     <script is:inline>
       (function () {
         const KEY = "fh:seconds-on-site";
-        let seconds = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        let seconds = 0;
+        try {
+          seconds = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        } catch (error) {}
         if (Number.isNaN(seconds)) seconds = 0;
         let timer = null;
 
         function persist() {
-          window.localStorage.setItem(KEY, String(seconds));
+          try {
+            window.localStorage.setItem(KEY, String(seconds));
+          } catch (error) {}
         }
         function tick() {
           seconds += 1;
@@ -182,7 +248,7 @@ const personSchema = {
       console.log(
         "%c👋 Hey, curious explorer!%c\nHave fun poking around.\nHere's my secret playground for games and experiments:\n\n" +
           location.origin +
-          "/playground\n\nPsst, you can also try the Konami code (keyboard) or swipe it (touch).\n\n↑ ↑ ↓ ↓ ← → ← → B A",
+          "/playground\n\nPsst, you can also try the Konami code (keyboard) or wiggle a finger up and down fast (touch).\n\n↑ ↑ ↓ ↓ ← → ← → B A",
         "font-size:15px;font-weight:700;color:#2d5db0",
         "font-size:12px;line-height:1.5;color:inherit",
       );
@@ -270,68 +336,56 @@ const personSchema = {
         }
       });
 
-      // Touch analog of the Konami code: the same arrow pattern, swiped.
-      type SwipeDirection = "up" | "down" | "left" | "right";
-      const swipeSequence: SwipeDirection[] = [
-        "up",
-        "up",
-        "down",
-        "down",
-        "left",
-        "right",
-        "left",
-        "right",
-      ];
-      // A deliberate drag needs real travel distance. A flick is the
-      // opposite: short travel, high speed, and it's common for a fast
-      // flick to fire only touchstart + touchend with no touchmove events
-      // at all (or so few that none individually cross a distance-only
-      // threshold) before the browser hands it off as a fling. So a
-      // shorter, faster stroke counts too, judged by speed instead of
-      // distance.
-      const MIN_SWIPE_DISTANCE = 24;
-      const MIN_FLICK_DISTANCE = 10;
-      const MIN_FLICK_VELOCITY = 0.5; // px/ms, roughly 500px/s
-      // How much one axis must lead the other before we commit to a
-      // direction. Below this, a near-45° stroke is ambiguous and we wait
-      // for more movement instead of guessing (and possibly guessing wrong).
-      const AXIS_DOMINANCE = 1.2;
-      let swipePosition = 0;
+      // Touch: a quick up-down wiggle. Six alternating vertical strokes,
+      // each starting soon after the last, fire the same confetti. Strokes
+      // can be one continuous zigzag or separate swipes; normal scrolling
+      // rarely reverses that fast, that many times.
+      type Stroke = "up" | "down";
+      const WIGGLE_STROKES = 6;
+      const MAX_STROKE_GAP_MS = 450;
+      const MIN_STROKE_DISTANCE = 24;
+      let strokeCount = 0;
+      let lastStroke: Stroke | null = null;
+      let lastStrokeTime = 0;
       let activeTouchId: number | null = null;
-      let segmentStartX = 0;
-      let segmentStartY = 0;
-      let segmentStartTime = 0;
-      // The sequence needs the same direction twice in a row (up, up /
-      // down, down). A single continuous stroke in one direction gets
-      // sampled into an unpredictable number of touchmove chunks, so
-      // without this it registers as many repeats as happened to be
-      // sampled and the position bounces around at random. Only count a
-      // direction again once the finger has actually moved a different
-      // way in between — a real repeat means lifting and swiping again.
-      let lastRegisteredDirection: SwipeDirection | null = null;
+      // Pinch-zoom shifts touch coordinates up and down, so any multi-touch
+      // gesture cancels the wiggle until every finger lifts.
+      let multiTouch = false;
+      // Where the current stroke turned around. It follows the finger while
+      // it keeps going the same way, so a reversal is measured from the
+      // stroke's far end rather than from where the touch began.
+      let anchorX = 0;
+      let anchorY = 0;
 
-      function resolveAxis(dx: number, dy: number): SwipeDirection | null {
-        const absX = Math.abs(dx);
-        const absY = Math.abs(dy);
-        if (absX > absY * AXIS_DOMINANCE) return dx > 0 ? "right" : "left";
-        if (absY > absX * AXIS_DOMINANCE) return dy > 0 ? "down" : "up";
-        return null;
+      function registerStroke(stroke: Stroke) {
+        const now = performance.now();
+        strokeCount =
+          now - lastStrokeTime <= MAX_STROKE_GAP_MS ? strokeCount + 1 : 1;
+        lastStroke = stroke;
+        lastStrokeTime = now;
+        if (strokeCount >= WIGGLE_STROKES) {
+          strokeCount = 0;
+          lastStroke = null;
+          launchConfetti();
+        }
       }
 
-      function swipeDirection(
-        dx: number,
-        dy: number,
-        elapsedMs: number,
-      ): SwipeDirection | null {
-        const distance = Math.max(Math.abs(dx), Math.abs(dy));
-        if (distance < MIN_FLICK_DISTANCE) return null;
-
-        const isDrag = distance >= MIN_SWIPE_DISTANCE;
-        const velocity = elapsedMs > 0 ? distance / elapsedMs : Infinity;
-        const isFlick = velocity >= MIN_FLICK_VELOCITY;
-        if (!isDrag && !isFlick) return null;
-
-        return resolveAxis(dx, dy);
+      function trackTouch(x: number, y: number) {
+        const dx = x - anchorX;
+        const dy = y - anchorY;
+        const stroke: Stroke = dy > 0 ? "down" : "up";
+        if (stroke === lastStroke) {
+          // Still the same stroke: extend it.
+          anchorX = x;
+          anchorY = y;
+          return;
+        }
+        // Ignore small jitter and mostly sideways movement.
+        if (Math.abs(dy) < MIN_STROKE_DISTANCE || Math.abs(dy) < Math.abs(dx))
+          return;
+        anchorX = x;
+        anchorY = y;
+        registerStroke(stroke);
       }
 
       function findActiveTouch(touches: TouchList): Touch | null {
@@ -341,81 +395,48 @@ const personSchema = {
         return null;
       }
 
-      function registerSwipe(direction: SwipeDirection) {
-        if (direction === swipeSequence[swipePosition]) {
-          swipePosition += 1;
-          if (swipePosition === swipeSequence.length) {
-            swipePosition = 0;
-            launchConfetti();
-          }
-        } else {
-          swipePosition = direction === swipeSequence[0] ? 1 : 0;
-        }
-      }
-
-      function startSegment(x: number, y: number) {
-        segmentStartX = x;
-        segmentStartY = y;
-        segmentStartTime = performance.now();
-      }
-
       window.addEventListener(
         "touchstart",
         (event) => {
+          if (event.touches.length > 1) {
+            multiTouch = true;
+            activeTouchId = null;
+            strokeCount = 0;
+            lastStroke = null;
+          }
+          if (multiTouch) return;
           const touch = event.changedTouches[0];
           if (!touch) return;
           activeTouchId = touch.identifier;
-          lastRegisteredDirection = null;
-          startSegment(touch.clientX, touch.clientY);
+          // A stale stroke from an earlier gesture shouldn't swallow the
+          // first stroke of a new wiggle.
+          if (performance.now() - lastStrokeTime > MAX_STROKE_GAP_MS)
+            lastStroke = null;
+          anchorX = touch.clientX;
+          anchorY = touch.clientY;
         },
         { passive: true },
       );
 
-      // Detect direction on touchmove rather than waiting for touchend: a
-      // fast fling is often handed off to native scrolling mid-gesture,
-      // which fires touchcancel instead of touchend and would otherwise
-      // drop the swipe entirely. Once a segment resolves to a direction, the
-      // start point resets to the current position so one continuous drag
-      // (e.g. a zigzag without lifting the finger) can register the whole
-      // multi-swipe sequence, not just its first stroke.
       window.addEventListener(
         "touchmove",
         (event) => {
-          if (activeTouchId === null) return;
           const touch = findActiveTouch(event.changedTouches);
-          if (!touch) return;
-
-          const direction = swipeDirection(
-            touch.clientX - segmentStartX,
-            touch.clientY - segmentStartY,
-            performance.now() - segmentStartTime,
-          );
-          if (!direction) return;
-
-          startSegment(touch.clientX, touch.clientY);
-          if (direction === lastRegisteredDirection) return;
-          lastRegisteredDirection = direction;
-          registerSwipe(direction);
+          if (touch) trackTouch(touch.clientX, touch.clientY);
         },
         { passive: true },
       );
 
-      // A quick flick can end (touchend/touchcancel) before any touchmove
-      // crosses the threshold, or with no touchmove firing at all — so
-      // re-check the final position against the segment start here too.
+      // A fast flick can end with few or no touchmove events, and a fling
+      // handed off to native scrolling ends in touchcancel, so check the
+      // final position on both.
       function handleTouchEnd(event: TouchEvent) {
-        if (activeTouchId === null) return;
-        const touch = findActiveTouch(event.changedTouches);
-        if (touch) {
-          const direction = swipeDirection(
-            touch.clientX - segmentStartX,
-            touch.clientY - segmentStartY,
-            performance.now() - segmentStartTime,
-          );
-          if (direction && direction !== lastRegisteredDirection) {
-            registerSwipe(direction);
-          }
+        if (multiTouch) {
+          if (event.touches.length === 0) multiTouch = false;
+          return;
         }
+        const touch = findActiveTouch(event.changedTouches);
+        if (touch) trackTouch(touch.clientX, touch.clientY);
         activeTouchId = null;
       }
 

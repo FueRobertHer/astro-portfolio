@@ -15,8 +15,9 @@ const games: Game[] = [];
 <BaseLayout
   title="Playground | Fue Her"
   description="A hidden playground where Fue Her hosts personal games and experiments."
+  noindex
 >
-  <main class="py-12 sm:py-20">
+  <main id="main" class="py-12 sm:py-20">
     <section class="max-w-3xl animate-fade-up">
       <p class="text-sm font-bold uppercase text-accent dark:text-accent-dark">
         You found the secret page
@@ -137,7 +138,10 @@ const games: Game[] = [];
       const KEY = "fh:seconds-on-site";
       const fmt = new Intl.NumberFormat();
       function read() {
-        const v = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        let v = 0;
+        try {
+          v = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        } catch (error) {}
         return Number.isNaN(v) ? 0 : v;
       }
       el.textContent = fmt.format(read());
