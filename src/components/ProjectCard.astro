@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import type { Project } from "../data/projects";
 
 export interface Props {
@@ -16,6 +17,17 @@ const Heading = ({ 2: "h2", 3: "h3" } as const)[headingLevel];
 <article
   class="group flex h-full flex-col rounded-md border border-stone-300 bg-stone-100/70 p-5 transition duration-200 hover:-translate-y-1 hover:border-accent hover:shadow-lg dark:border-stone-800 dark:bg-stone-900/70 dark:hover:border-accent-dark"
 >
+  {
+    project.image && (
+      <Image
+        src={project.image.src}
+        alt={project.image.alt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 1024px) 560px, 100vw"
+        class="-mx-5 -mt-5 mb-5 aspect-[16/10] w-[calc(100%+2.5rem)] max-w-none rounded-t-md border-b border-stone-300 object-cover object-top dark:border-stone-800"
+      />
+    )
+  }
   <p class="text-xs font-bold uppercase text-accent dark:text-accent-dark">
     {project.eyebrow}
   </p>

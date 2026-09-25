@@ -1,0 +1,5 @@
+dist
+.vercel
+.astro
+bun.lock
+public
