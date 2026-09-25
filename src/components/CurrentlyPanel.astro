@@ -7,9 +7,13 @@
       Currently
     </p>
     <div class="flex items-center gap-1.5" title="Available for opportunities">
+      {
+        /* Pulses three times, then rests: an endless pulse keeps the page
+          rendering every frame, which made scrolling lag on phones. */
+      }
       <span class="relative flex size-2.5">
         <span
-          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"
+          class="absolute inline-flex h-full w-full animate-[ping_1s_cubic-bezier(0,0,0.2,1)_3_forwards] rounded-full bg-emerald-400 opacity-75"
         ></span>
         <span class="relative inline-flex size-2.5 rounded-full bg-emerald-500"
         ></span>

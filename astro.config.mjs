@@ -39,9 +39,10 @@ export default defineConfig({
     sitemap({ filter: (page) => !page.includes("/playground") }),
     securityHeaders,
   ],
-  // Fetch a page when its link is hovered or focused, so navigation between
-  // the few pages here feels instant.
-  prefetch: { prefetchAll: true, defaultStrategy: "hover" },
+  // Fetch a page once its link scrolls into view, so navigation between the
+  // few pages here feels instant. Hover-based prefetch never fires on phones.
+  // Astro skips prefetching with Data Saver on or on 2G connections.
+  prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
   // Static output: every page is prerendered and served from Vercel's CDN
   // instead of hitting a serverless function on each request. Analytics is
   // injected client-side in BaseLayout, so the adapter option isn't needed
