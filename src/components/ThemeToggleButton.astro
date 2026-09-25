@@ -76,11 +76,14 @@
 
       // Only remember an explicit choice; matching the system again means
       // "follow the system" from here on.
-      if (next === systemTheme) {
-        localStorage.removeItem("theme");
-      } else {
-        localStorage.setItem("theme", next);
-      }
+      // Storage can throw (blocked site data); switch the theme anyway.
+      try {
+        if (next === systemTheme) {
+          localStorage.removeItem("theme");
+        } else {
+          localStorage.setItem("theme", next);
+        }
+      } catch {}
 
       // A view transition crossfades one snapshot of the whole page, so
       // every surface changes together instead of each element easing on

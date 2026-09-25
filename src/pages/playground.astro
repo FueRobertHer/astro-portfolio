@@ -138,7 +138,10 @@ const games: Game[] = [];
       const KEY = "fh:seconds-on-site";
       const fmt = new Intl.NumberFormat();
       function read() {
-        const v = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        let v = 0;
+        try {
+          v = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        } catch (error) {}
         return Number.isNaN(v) ? 0 : v;
       }
       el.textContent = fmt.format(read());

@@ -14,16 +14,19 @@ export interface Props {
   noindex?: boolean;
 }
 
+const defaultImage = { src: "/og.png", width: 1200, height: 630 };
 const {
   title,
   description,
-  image = "/og.png",
+  image = defaultImage.src,
   imageAlt = "Fue Her, Full Stack Engineer. I build growth-focused web products at scale.",
   noindex = false,
 } = Astro.props;
 const site = Astro.site ?? new URL("https://fueher.com");
 const canonicalURL = new URL(Astro.url.pathname, site).toString();
 const imageURL = new URL(image, site).toString();
+// Only the default image has known dimensions.
+const imageSize = image === defaultImage.src ? defaultImage : undefined;
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -78,14 +81,24 @@ const personSchema = {
     />
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex" />}
-    <link rel="canonical" href={canonicalURL} />
+    {
+      // A noindex page has no URL worth pointing at; the 404 in particular
+      // would claim /404/, which isn't a real route.
+      !noindex && <link rel="canonical" href={canonicalURL} />
+    }
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
+    {!noindex && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={imageURL} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    {
+      imageSize && (
+        <>
+          <meta property="og:image:width" content={String(imageSize.width)} />
+          <meta property="og:image:height" content={String(imageSize.height)} />
+        </>
+      )
+    }
     <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -102,8 +115,17 @@ const personSchema = {
     <script is:inline>
       (function () {
         const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+        // Storage can throw (blocked site data), which would otherwise leave
+        // the page on the wrong theme.
+        const storedTheme = function () {
+          try {
+            return localStorage.getItem("theme");
+          } catch (error) {
+            return null;
+          }
+        };
         const preferredTheme = function () {
-          const stored = localStorage.getItem("theme");
+          const stored = storedTheme();
           if (stored === "dark" || stored === "light") return stored;
           return systemDark.matches ? "dark" : "light";
         };
@@ -121,7 +143,7 @@ const personSchema = {
         window.__applyTheme(preferredTheme());
         // With no saved choice, follow the system theme live.
         systemDark.addEventListener("change", function () {
-          if (!localStorage.getItem("theme")) {
+          if (!storedTheme()) {
             window.__applyTheme(preferredTheme());
           }
         });
@@ -171,12 +193,17 @@ const personSchema = {
     <script is:inline>
       (function () {
         const KEY = "fh:seconds-on-site";
-        let seconds = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        let seconds = 0;
+        try {
+          seconds = parseInt(window.localStorage.getItem(KEY) || "0", 10);
+        } catch (error) {}
         if (Number.isNaN(seconds)) seconds = 0;
         let timer = null;
 
         function persist() {
-          window.localStorage.setItem(KEY, String(seconds));
+          try {
+            window.localStorage.setItem(KEY, String(seconds));
+          } catch (error) {}
         }
         function tick() {
           seconds += 1;
@@ -321,6 +348,9 @@ const personSchema = {
       let lastStroke: Stroke | null = null;
       let lastStrokeTime = 0;
       let activeTouchId: number | null = null;
+      // Pinch-zoom shifts touch coordinates up and down, so any multi-touch
+      // gesture cancels the wiggle until every finger lifts.
+      let multiTouch = false;
       // Where the current stroke turned around. It follows the finger while
       // it keeps going the same way, so a reversal is measured from the
       // stroke's far end rather than from where the touch began.
@@ -368,6 +398,13 @@ const personSchema = {
       window.addEventListener(
         "touchstart",
         (event) => {
+          if (event.touches.length > 1) {
+            multiTouch = true;
+            activeTouchId = null;
+            strokeCount = 0;
+            lastStroke = null;
+          }
+          if (multiTouch) return;
           const touch = event.changedTouches[0];
           if (!touch) return;
           activeTouchId = touch.identifier;
@@ -394,6 +431,10 @@ const personSchema = {
       // handed off to native scrolling ends in touchcancel, so check the
       // final position on both.
       function handleTouchEnd(event: TouchEvent) {
+        if (multiTouch) {
+          if (event.touches.length === 0) multiTouch = false;
+          return;
+        }
         const touch = findActiveTouch(event.changedTouches);
         if (touch) trackTouch(touch.clientX, touch.clientY);
         activeTouchId = null;
