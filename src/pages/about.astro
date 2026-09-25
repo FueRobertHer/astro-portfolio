@@ -1,6 +1,8 @@
 ---
+import ButtonLink from "../components/ButtonLink.astro";
 import Link from "../components/Link.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { education, resumeHref, roles } from "../data/experience";
 ---
 
 <BaseLayout
@@ -22,6 +24,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         &quot;d&quot;. I&apos;m a full-stack engineer who likes building clear,
         useful software with teams that care about both people and craft.
       </p>
+      <div class="mt-6">
+        <ButtonLink
+          href={resumeHref}
+          variant="secondary"
+          target="_blank"
+          data-astro-prefetch="false"
+        >
+          Resume (PDF)
+        </ButtonLink>
+      </div>
     </section>
 
     <div class="mt-12 grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
@@ -34,12 +46,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <ul
           class="mt-4 space-y-3 text-sm leading-6 text-stone-600 dark:text-stone-300"
         >
-          <li>Start from the problem and the user, not a preferred tech stack.</li>
+          <li>
+            Start from the problem and the user, not a preferred tech stack.
+          </li>
           <li>
             Make the tradeoffs explicit early: product, technical, and
             accessibility constraints up front.
           </li>
-          <li>Ship in small, testable slices so work lands safely and early.</li>
+          <li>
+            Ship in small, testable slices so work lands safely and early.
+          </li>
           <li>
             Build for the next person: maintainable, accessible, easy to change.
           </li>
@@ -76,6 +92,58 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               engineering craft both carry weight.
             </p>
           </div>
+        </article>
+
+        <article>
+          <h2 class="text-2xl font-black text-stone-950 dark:text-stone-50">
+            Experience
+          </h2>
+          <ol
+            class="mt-4 space-y-6 border-l-2 border-stone-300 pl-5 dark:border-stone-800"
+          >
+            {
+              roles.map((role) => (
+                <li class="relative">
+                  <span
+                    class="absolute -left-[1.6875rem] top-2 size-2.5 rounded-full bg-accent dark:bg-accent-dark"
+                    aria-hidden="true"
+                  />
+                  <h3 class="font-black text-stone-950 dark:text-stone-50">
+                    {role.title}
+                    <span class="font-bold text-stone-600 dark:text-stone-300">
+                      {" "}
+                      &middot; {role.company}
+                    </span>
+                  </h3>
+                  <p class="text-sm text-stone-600 dark:text-stone-300">
+                    {role.dates}
+                  </p>
+                  <ul class="mt-2 space-y-2 text-sm leading-6 text-stone-600 dark:text-stone-300">
+                    {role.highlights.map((highlight) => (
+                      <li>{highlight}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))
+            }
+          </ol>
+          <h3 class="mt-8 font-black text-stone-950 dark:text-stone-50">
+            Education
+          </h3>
+          <ul
+            class="mt-2 space-y-1 text-sm leading-6 text-stone-600 dark:text-stone-300"
+          >
+            {
+              education.map((item) => (
+                <li>
+                  <span class="font-bold text-stone-800 dark:text-stone-100">
+                    {item.name}
+                  </span>
+                  , {item.school}, {item.year}
+                </li>
+              ))
+            }
+          </ul>
         </article>
 
         <article class="group">

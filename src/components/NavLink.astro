@@ -1,6 +1,6 @@
 ---
 export interface Props {
- href: string;
+  href: string;
 }
 
 const { href } = Astro.props;
@@ -13,9 +13,15 @@ const normalize = (value: string) =>
 const isActive = normalize(Astro.url.pathname) === normalize(href);
 ---
 
+{
+  /* Prefetch on load: on phones these links sit in the closed menu, so the
+     default viewport strategy would never see them. */
+}
+
 <a
   href={href}
   aria-current={isActive ? "page" : undefined}
+  data-astro-prefetch="load"
   class={`border-b-2 py-2 text-sm font-bold uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent dark:focus-visible:outline-accent-dark ${isActive ? "border-accent text-accent dark:border-accent-dark dark:text-accent-dark" : "border-transparent hover:border-stone-400 hover:text-accent dark:hover:border-stone-600 dark:hover:text-accent-dark"}`}
 >
   <slot />

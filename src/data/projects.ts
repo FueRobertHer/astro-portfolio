@@ -1,3 +1,5 @@
+import type { ImageMetadata } from "astro";
+
 export interface ProjectLink {
   label: string;
   href: string;
@@ -12,6 +14,9 @@ export interface Project {
   highlights: string[];
   links: ProjectLink[];
   featured?: boolean;
+  // A screenshot shown at the top of the card, imported from
+  // src/assets/projects/ (16:10 works best; it's cropped from the top).
+  image?: { src: ImageMetadata; alt: string };
 }
 
 export const projects: Project[] = [

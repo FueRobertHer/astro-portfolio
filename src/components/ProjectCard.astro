@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import type { Project } from "../data/projects";
 
 export interface Props {
@@ -16,6 +17,17 @@ const Heading = ({ 2: "h2", 3: "h3" } as const)[headingLevel];
 <article
   class="group flex h-full flex-col rounded-md border border-stone-300 bg-stone-100/70 p-5 transition duration-200 hover:-translate-y-1 hover:border-accent hover:shadow-lg dark:border-stone-800 dark:bg-stone-900/70 dark:hover:border-accent-dark"
 >
+  {
+    project.image && (
+      <Image
+        src={project.image.src}
+        alt={project.image.alt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 1024px) 560px, 100vw"
+        class="-mx-5 -mt-5 mb-5 aspect-[16/10] w-[calc(100%+2.5rem)] max-w-none rounded-t-md border-b border-stone-300 object-cover object-top dark:border-stone-800"
+      />
+    )
+  }
   <p class="text-xs font-bold uppercase text-accent dark:text-accent-dark">
     {project.eyebrow}
   </p>
@@ -29,27 +41,38 @@ const Heading = ({ 2: "h2", 3: "h3" } as const)[headingLevel];
     {project.summary}
   </p>
 
-  {!compact && (
-    <p class="mt-4 text-sm font-medium text-stone-700 dark:text-stone-200">
-      {project.role}
-    </p>
-  )}
+  {
+    !compact && (
+      <p class="mt-4 text-sm font-medium text-stone-700 dark:text-stone-200">
+        {project.role}
+      </p>
+    )
+  }
 
-  <ul class={`${compact ? "mt-4" : "mt-5"} space-y-2 text-sm text-stone-600 dark:text-stone-300`}>
-    {project.highlights.slice(0, compact ? 2 : 3).map((highlight) => (
-      <li class="flex gap-2">
-        <span class="mt-2 size-1.5 flex-none rounded-full bg-accent dark:bg-accent-dark" aria-hidden="true" />
-        <span>{highlight}</span>
-      </li>
-    ))}
+  <ul
+    class={`${compact ? "mt-4" : "mt-5"} space-y-2 text-sm text-stone-600 dark:text-stone-300`}
+  >
+    {
+      project.highlights.slice(0, compact ? 2 : 3).map((highlight) => (
+        <li class="flex gap-2">
+          <span
+            class="mt-2 size-1.5 flex-none rounded-full bg-accent dark:bg-accent-dark"
+            aria-hidden="true"
+          />
+          <span>{highlight}</span>
+        </li>
+      ))
+    }
   </ul>
 
   <ul class="mt-5 flex flex-wrap gap-2" aria-label={`${project.title} stack`}>
-    {project.stack.map((item) => (
-      <li class="rounded-md border border-stone-300/80 bg-stone-200/60 px-2.5 py-1 text-xs font-bold text-stone-800 dark:border-stone-700/80 dark:bg-stone-800/60 dark:text-stone-200">
-        {item}
-      </li>
-    ))}
+    {
+      project.stack.map((item) => (
+        <li class="rounded-md border border-stone-300/80 bg-stone-200/60 px-2.5 py-1 text-xs font-bold text-stone-800 dark:border-stone-700/80 dark:bg-stone-800/60 dark:text-stone-200">
+          {item}
+        </li>
+      ))
+    }
   </ul>
 
   <div class="mt-auto flex flex-wrap gap-3 pt-6">

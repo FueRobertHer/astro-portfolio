@@ -3,13 +3,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /* Brand accents. Blue leads in light mode; warm red leads in dark mode.
      The light-mode blue is tuned for AA contrast on the stone-50/100 surfaces. */
   --color-accent: #2d5db0;
   --color-accent-dark: #e05243;
+  /* Deeper red for fills behind white text: #e05243 is only 3.8:1 with
+     white, this is 5.2:1 (AA). */
+  --color-accent-dark-strong: #c43c2e;
 
   /* Gentle entrance used on the hero and cards. */
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -32,8 +36,16 @@
   color: #fff;
 }
 .dark ::selection {
-  background-color: var(--color-accent-dark);
+  background-color: var(--color-accent-dark-strong);
   color: #fff;
+}
+
+/* Crossfade between pages (browsers without cross-document view transitions
+   just navigate normally). */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
 }
 
 /* Respect users who prefer less motion: drop animations and transitions. */
