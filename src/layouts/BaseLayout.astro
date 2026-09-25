@@ -1,15 +1,26 @@
 ---
 import Header from "../components/Header.astro";
 import Link from "../components/Link.astro";
+import "@fontsource-variable/inter/wght.css";
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "../styles/global.css";
 
 export interface Props {
   title: string;
   description: string;
   image?: string;
+  imageAlt?: string;
+  // Keep a page out of search results (the hidden playground, the 404).
+  noindex?: boolean;
 }
 
-const { title, description, image = "/FH-150x150.png" } = Astro.props;
+const {
+  title,
+  description,
+  image = "/og.png",
+  imageAlt = "Fue Her, Full Stack Engineer. I build growth-focused web products at scale.",
+  noindex = false,
+} = Astro.props;
 const site = Astro.site ?? new URL("https://fueher.com");
 const canonicalURL = new URL(Astro.url.pathname, site).toString();
 const imageURL = new URL(image, site).toString();
@@ -37,16 +48,17 @@ const personSchema = {
 <!doctype html>
 <html lang="en" class="font-sans">
   <head>
+    <meta charset="UTF-8" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta charset="UTF-8" />
     <meta name="author" content="Fue Her" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=optional"
+      rel="preload"
+      href={interLatin}
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -65,16 +77,21 @@ const personSchema = {
       media="(prefers-color-scheme: dark)"
     />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonicalURL} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={imageURL} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <script
       is:inline
       type="application/ld+json"
@@ -123,6 +140,12 @@ const personSchema = {
   <body
     class="flex min-h-screen min-w-full flex-col items-center bg-stone-200 p-3 text-stone-700 sm:p-6 sm:pb-3 dark:bg-stone-950 dark:text-stone-200"
   >
+    <a
+      href="#main"
+      class="sr-only rounded-md bg-accent px-4 py-2 text-sm font-bold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 dark:bg-accent-dark"
+    >
+      Skip to content
+    </a>
     <div
       class="relative flex w-full max-w-full grow flex-col items-center rounded-md border border-stone-300 bg-stone-50 shadow-[0_0_2rem_rgba(28,28,28,0.08)] sm:max-w-screen-2xl dark:border-stone-800 dark:bg-stone-950 dark:shadow-[0_0_2rem_rgba(0,0,0,0.28)]"
     >

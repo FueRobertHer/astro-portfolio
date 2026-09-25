@@ -1,8 +1,8 @@
 ---
 import Logo from "./Logo.astro";
 import NavLink from "./NavLink.astro";
-import Menu from "./Menu";
-import ThemeToggleButton from "./ThemeToggleButton";
+import Menu from "./Menu.astro";
+import ThemeToggleButton from "./ThemeToggleButton.astro";
 
 interface Link {
   text: string;
@@ -29,34 +29,38 @@ const links: Link[] = [
   <a class="size-8" href="/" aria-label="Fue Her home">
     <Logo />
   </a>
-  <div
-    class="hidden items-center justify-between sm:flex sm:w-fit sm:justify-normal"
-  >
-    {
-      links.map((link) => (
-        <span class="mx-4">
-          <NavLink href={link.href}>{link.text}</NavLink>
-        </span>
-      ))
-    }
+  <div class="hidden items-center sm:flex">
+    <nav aria-label="Main">
+      <ul class="flex items-center">
+        {
+          links.map((link) => (
+            <li class="mx-4">
+              <NavLink href={link.href}>{link.text}</NavLink>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
     <span class="mx-4">
-      <ThemeToggleButton client:visible />
+      <ThemeToggleButton />
     </span>
   </div>
   <div class="sm:hidden">
-    <Menu client:visible>
-      <menu class="flex flex-col items-center gap-4 text-lg">
-        <div>
-          <ThemeToggleButton client:visible />
-        </div>
-        {
-          links.map((link) => (
-            <div>
-              <NavLink href={link.href}>{link.text}</NavLink>
-            </div>
-          ))
-        }
-      </menu>
+    <Menu>
+      <div class="flex flex-col items-center gap-4 text-lg">
+        <ThemeToggleButton />
+        <nav aria-label="Main">
+          <ul class="flex flex-col items-center gap-4">
+            {
+              links.map((link) => (
+                <li>
+                  <NavLink href={link.href}>{link.text}</NavLink>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
     </Menu>
   </div>
 </header>

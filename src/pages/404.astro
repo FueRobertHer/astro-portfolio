@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ButtonLink from "../components/ButtonLink.astro";
+---
+
+<BaseLayout
+  title="Page not found | Fue Her"
+  description="This page doesn't exist on fueher.com."
+  noindex
+>
+  <main id="main" class="py-12 sm:py-20">
+    <section class="max-w-3xl animate-fade-up">
+      <p class="text-sm font-bold uppercase text-accent dark:text-accent-dark">
+        404
+      </p>
+      <h1
+        class="mt-3 text-4xl font-black text-stone-950 sm:text-5xl dark:text-stone-50"
+      >
+        This page wandered off.
+      </h1>
+      <p class="mt-5 text-lg leading-8 text-stone-600 dark:text-stone-300">
+        The link may be old or mistyped. Here are a few places that do exist.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <ButtonLink href="/" variant="primary">Go home</ButtonLink>
+        <ButtonLink href="/projects" variant="secondary">See projects</ButtonLink>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
