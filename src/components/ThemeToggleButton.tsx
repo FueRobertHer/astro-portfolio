@@ -1,29 +1,28 @@
 import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 
+type Theme = "light" | "dark";
+
+const readTheme = (): Theme =>
+  document.documentElement.classList.contains("dark") ? "dark" : "light";
+
 const ThemeToggleButton = () => {
   // Render a stable default on the server and the first client render so
   // hydration matches; resolve the real theme only after mount.
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>("light");
 
+  // Follow the <html> class rather than owning the theme, so the desktop and
+  // mobile-menu toggles (and system preference changes) stay in sync.
   useEffect(() => {
-    setTheme(
-      document.documentElement.classList.contains("dark") ? "dark" : "light",
-    );
-    setMounted(true);
+    const sync = () => setTheme(readTheme());
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
   }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-    if (theme === "light") {
-      root.classList.remove("dark");
-    } else {
-      root.classList.add("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme, mounted]);
 
   const nextTheme = theme === "dark" ? "light" : "dark";
   const label = `Switch to ${nextTheme} theme`;
@@ -37,27 +36,32 @@ const ThemeToggleButton = () => {
         aria-pressed={theme === "dark"}
         aria-live="polite"
         onClick={() => {
-          // Briefly ease theme colors instead of snapping (see global.css).
-          const root = document.documentElement;
-          root.classList.add("theme-transition");
-          window.setTimeout(() => root.classList.remove("theme-transition"), 350);
+          const next = readTheme() === "dark" ? "light" : "dark";
+          const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+            .matches
+            ? "dark"
+            : "light";
 
-          const matchesDarkTheme = window.matchMedia(
-            "(prefers-color-scheme: dark)"
-          ).matches;
-
-          const otherTheme = theme === "dark" ? "light" : "dark";
-
-          if (
-            (matchesDarkTheme && theme === "dark") ||
-            (!matchesDarkTheme && theme === "light")
-          ) {
+          // Only remember an explicit choice; matching the system again means
+          // "follow the system" from here on.
+          if (next === systemTheme) {
             localStorage.removeItem("theme");
           } else {
-            localStorage.setItem("theme", otherTheme);
+            localStorage.setItem("theme", next);
           }
 
-          setTheme(otherTheme);
+          // A view transition crossfades one snapshot of the whole page, so
+          // every surface changes together instead of each element easing on
+          // its own clock (which read as a flicker).
+          const apply = () => window.__applyTheme(next);
+          const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+          ).matches;
+          if (document.startViewTransition && !reduceMotion) {
+            document.startViewTransition(apply);
+          } else {
+            apply();
+          }
         }}
       >
         <Sun
