@@ -57,27 +57,3 @@ export const education: Education[] = [
     year: "2013",
   },
 ];
-
-export interface Stat {
-  value: string;
-  label: string;
-}
-
-export const impact: Stat[] = [
-  {
-    value: "+33.2%",
-    label: "Conversion lift from a contextual-bandit experiment I shipped",
-  },
-  {
-    value: "1,632",
-    label: "Targeted page variants, scaled from 18 hand-built ones",
-  },
-  {
-    value: "4x",
-    label: "Faster experiment QA, from 60 minutes down to 15",
-  },
-  {
-    value: "28+",
-    label: "Languages I helped take the Remesh platform to",
-  },
-];

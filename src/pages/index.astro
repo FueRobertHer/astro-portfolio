@@ -5,7 +5,7 @@ import SocialLinks from "../components/SocialLinks.astro";
 import ButtonLink from "../components/ButtonLink.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { featuredProjects } from "../data/projects";
-import { impact, resumeHref } from "../data/experience";
+import { resumeHref } from "../data/experience";
 ---
 
 <BaseLayout
@@ -73,33 +73,6 @@ import { impact, resumeHref } from "../data/experience";
       <CurrentlyPanel />
     </section>
 
-    <section class="pb-12 sm:pb-16" aria-labelledby="impact">
-      <h2
-        id="impact"
-        class="text-sm font-bold uppercase text-accent dark:text-accent-dark"
-      >
-        Impact
-      </h2>
-      {
-        /* rem breakpoints, so the values keep fitting their cards at larger
-          text sizes too. */
-      }
-      <dl class="mt-4 grid gap-3 min-[22rem]:grid-cols-2 lg:grid-cols-4">
-        {
-          impact.map((stat) => (
-            <div class="flex flex-col-reverse justify-end rounded-md border border-stone-300 bg-stone-100/70 p-4 dark:border-stone-800 dark:bg-stone-900/70">
-              <dt class="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-300">
-                {stat.label}
-              </dt>
-              <dd class="text-2xl font-black text-stone-950 min-[26rem]:text-3xl dark:text-stone-50">
-                {stat.value}
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </section>
-
     <section class="pb-12 sm:pb-20" aria-labelledby="featured-work">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -123,7 +96,7 @@ import { impact, resumeHref } from "../data/experience";
         </a>
       </div>
 
-      <div class="mt-6 grid gap-5 lg:grid-cols-2">
+      <div class="mt-6 grid gap-5 lg:grid-cols-3">
         {
           featuredProjects.map((project) => (
             <ProjectCard project={project} compact headingLevel={3} />
