@@ -25,9 +25,10 @@ import { impact, resumeHref } from "../data/experience";
         <h1
           class="mt-3 max-w-3xl text-[clamp(1.875rem,9vw,2.25rem)] font-black leading-tight text-stone-950 sm:text-5xl dark:text-stone-50"
         >
-          {/* Kept on one line so it never splits at the hyphen; the clamp
-              above keeps it inside a 320px-wide screen. */}
-          I build <span class="whitespace-nowrap text-accent dark:text-accent-dark"
+          {/* Kept on one line so it never splits at the hyphen, but only once
+              the screen is 20rem wide: rem media queries follow the user's
+              font size, so larger text can still wrap instead of scrolling. */}
+          I build <span class="text-accent min-[20rem]:whitespace-nowrap dark:text-accent-dark"
             >growth-focused</span
           > web products at scale.
         </h1>
@@ -70,14 +71,18 @@ import { impact, resumeHref } from "../data/experience";
       >
         Impact
       </h2>
-      <dl class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {/* rem breakpoints, so the values keep fitting their cards at larger
+          text sizes too. */}
+      <dl
+        class="mt-4 grid gap-3 min-[22rem]:grid-cols-2 lg:grid-cols-4"
+      >
         {
           impact.map((stat) => (
             <div class="flex flex-col-reverse justify-end rounded-md border border-stone-300 bg-stone-100/70 p-4 dark:border-stone-800 dark:bg-stone-900/70">
               <dt class="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-300">
                 {stat.label}
               </dt>
-              <dd class="text-3xl font-black text-stone-950 dark:text-stone-50">
+              <dd class="text-2xl font-black text-stone-950 min-[26rem]:text-3xl dark:text-stone-50">
                 {stat.value}
               </dd>
             </div>

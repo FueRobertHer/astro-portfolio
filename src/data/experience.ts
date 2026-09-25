@@ -10,8 +10,8 @@ export interface Role {
 
 export const roles: Role[] = [
   {
-    title: "Software Engineer, Growth",
-    company: "Atlassian",
+    title: "Software Engineer",
+    company: "Atlassian (Growth)",
     dates: "Sept 2022 to Aug 2026",
     highlights: [
       "Led a machine-learning personalization program on high-traffic acquisition pages: 8 contextual-bandit experiments, with shipped treatments at +11.3% and +33.2% conversion lift.",
@@ -33,7 +33,7 @@ export const roles: Role[] = [
     company: "Remesh",
     dates: "Oct 2020 to Nov 2021",
     highlights: [
-      "Took the platform to WCAG A and AA compliance with semantic HTML, and helped make it CCPA and GDPR compliant.",
+      "Started the accessibility work that brought the platform to WCAG A and AA compliance, and helped make it CCPA and GDPR compliant.",
       "Built developer tooling that turned repetitive tasks into one click across the engineering team.",
     ],
   },
@@ -78,6 +78,6 @@ export const impact: Stat[] = [
   },
   {
     value: "28+",
-    label: "Languages the Remesh platform shipped in",
+    label: "Languages I helped take the Remesh platform to",
   },
 ];
